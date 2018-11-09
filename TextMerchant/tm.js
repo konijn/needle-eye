@@ -17,8 +17,9 @@ Game.prototype.keyPress = function keyPress(c) {
     if(item.activate){
       item.activate();
     }
-    console.log(item);
+    //console.log(item);
   }
+  ui.draw();
 }
 
 function update() {
@@ -59,10 +60,10 @@ function help() {
 }
 
 function scaffoldLoad(data) {
-  var item;
+  var i, item;
   ui.fullUpdate = true;
   data.inventory = data.inventory || [new Portal()];
-  for (i in data.inventory) {
+  for (i = 0; i < data.inventory.length; i++) {
     let item = data.inventory[i];
     if (item._constructorName) {
       o = Object.create(this[item._constructorName].prototype);
@@ -106,6 +107,9 @@ UI.prototype.draw = function draw() {
     }
     let portals = data.inventory.filterClass(Portal).sortBy('base');
     portals.forEach(ui.showInventoryItem);
+    let imps = data.inventory.filterClass(Imp).sortBy('base');
+    imps.forEach(ui.showInventoryItem);
+
     ui.inventoryUpdate = false;
   }
   ui.fullUpdate = false;
@@ -130,7 +134,7 @@ UI.prototype.showInventoryItem = function showInventoryItem(item, index) {
   if (index == ui.selector) {
     description = '<b>' + description + '</b>'
   }
-  ui.elements.world.innerHTML += (description + '<br>');
+  ui.elements.world.innerHTML += description;
 }
 
 UI.rigKeyhandler = function rigKeyhandler() {
@@ -140,9 +144,13 @@ UI.rigKeyhandler = function rigKeyhandler() {
   }
 }
 
+function basicInit(o){
+
+}
+
 function Portal(base) {
-  this.base = base = base || 10;
-  if (base == 10) {
+  this.base = base = base || 0;
+  if (base == 0) {
     this.prefix = "";
     this.postfix = "";
   }
@@ -151,8 +159,8 @@ function Portal(base) {
 }
 
 Portal.prototype.activate = function portalActivate() {
-
   Imp.add(0);
+  ui.inventoryUpdate = true;
 
 }
 
@@ -160,6 +168,10 @@ function Imp(base){
   //Base is 0, your basic imps..
   this.base = base || 0;
   this.count = 1;
+  if (base == 0) {
+    this.prefix = "";
+    this.postfix = "";
+  }
 }
 
 Imp.add = function addImp(base){
