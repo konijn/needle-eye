@@ -1,0 +1,11 @@
+{
+  "aiml": {
+    "version": "1.0",
+    "category": [
+      {
+        "pattern": "TEST WHOAMI",
+        "template": "My name is Muutye"
+      },
+    ]
+  }
+}
