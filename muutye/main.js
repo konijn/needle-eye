@@ -8,106 +8,92 @@ const io = require('readline').createInterface({ input: process.stdin, output: p
 const colors = require('colors');
 const fs = require('fs');
 const ut = require('./ut.js');
+const log = require('./log.js').log;
 
-//Cue because prompt is already taken
+const DEBUG = 0;
+const WARNING = 4;
+const ERROR = 8;
+const CATASTROPHE = 16;
+
 let cue = 'Muutye awakens..';
 //As long as we are interested, we keep going
 let interested = true;
 //What AIML version do we support?
 const supportedAIMLVersion = '1.0';
 //The brain..
-let brain = {
-	categories: []
-};
 
 
-// Logging for dummies	\\
-const DEBUG = 0;
-const WARNING = 4;
-const ERROR = 8;
-const CATASTROPHE = 16;
-let logLevel = WARNING;
-function log(level, ...rest){
-	//Bad caller, no log level.
-	if(!rest){
-		console.log(level);
-	}else if(level === 0 || level === 4 || level === 8 || level === 16){
-		if(level >= logLevel){
-			log.call({logColor: level},...rest);
+let HAL = {
+	cue: 'Muutye awakens..', //Cue because prompt is already taken
+	interested: true, //As long as we are interested, we keep going
+	supportedAIMLVersion: '1.0', //What AIML version do we support?
+	
+	brain : {
+		categories: []
+	},
+	
+	parse: function parse(o){
+		console.log(o);
+		if(!o.aiml){
+			log(CATASTROPHE,"aiml files must have a top level aiml member");
 		}
-		if(level==CATASTROPHE){
-			console.log('> Muutye screams in agony..'.red);
-			io.close();
-			process.exit();
+		let aiml = o.aiml;
+		if(aiml.version === undefined){
+			log(WARNING,"aiml files should have a top level aiml member");
 		}
-	} else{
-		if(this.logColor==WARNING){
-			level = level.yellow;
+		if(aiml.version.trim() != supportedAIMLVersion){
+			log(WARNING,"Muutye was built for version " + supportedAIMLVersion + ', not ' + aiml.version);
 		}
-		if(this.logColor==ERROR){
-			level = level.red;
+		if(!aiml.category){
+			log(WARNING,"No categories were found");
 		}
-		console.log(level, ...rest);
-	}
-}
-
-
-function parse(o){
-	console.log(o);
-	if(!o.aiml){
-		log(CATASTROPHE,"aiml files must have a top level aiml member");
-	}
-	let aiml = o.aiml;
-	if(aiml.version === undefined){
-		log(WARNING,"aiml files should have a top level aiml member");
-	}
-	if(aiml.version.trim() != supportedAIMLVersion){
-		log(WARNING,"Muutye was built for version " + supportedAIMLVersion + ', not ' + aiml.version);
-	}
-	if(!aiml.category){
-		log(WARNING,"No categories were found");
-	}
-	//Enforce category to be an array
-	let category = aiml.category.length ? aiml.category : [aiml.category];
-	for(const counter in category){
-		if(!category[counter].pattern){
-			log(WARNING, `Category ${counter} has no pattern`);
-		}else{
-			//Lowercase patterns to harmonize
-			category[counter].pattern = category[counter].pattern.toLowerCase();
+		//Enforce category to be an array
+		let category = aiml.category.length ? aiml.category : [aiml.category];
+		for(const counter in category){
+			if(!category[counter].pattern){
+				log(WARNING, `Category ${counter} has no pattern`);
+			}else{
+				//Lowercase patterns to harmonize
+				category[counter].pattern = category[counter].pattern.toLowerCase();
+			}
 		}
-	}
-	//Add the category to the brain
-	brain.categories = brain.categories.concat(aiml.category);
-}
+		//Add the category to the brain
+		HAL.brain.categories = HAL.brain.categories.concat(aiml.category);
+	},
+	
+	loadAIML: function loadAIML(filename){
 
-
-function findCategory(input){
-	input = input.toLowerCase();
-
-	for(const category of brain.categories){
-		if(category.pattern == input){
-			log(DEBUG, category);
-			return category;
+		log(DEBUG, ('Loading ' + filename).yellow);
+		
+		try {
+			const content = fs.readFileSync(filename);
+			const json = JSON.parse(content);
+			HAL.parse(json);
 		}
-	}
-}
+		catch(error) {
+			console.log('Caught an error', error);
+  		log(ERROR, error);
+		}
+	},
 
-function runCategory(category){
-	if(!category)
-		return;
-	if(category.script){
-		eval(category.script);
-	}
-}
+	findCategory: function findCategory(input){
+		input = input.toLowerCase();
 
-
-function loadAIML(filename){
-
-	log(DEBUG, ('Loading ' + filename).yellow);
-	const content = fs.readFileSync(filename);
-	const json = JSON.parse(content);
-	parse(json);
+		for(const category of HAL.brain.categories){
+			if(category.pattern == input){
+				log(DEBUG, category);
+				return category;
+			}
+		}
+	},
+	
+	runCategory: function runCategory(category){
+		if(!category)
+			return;
+		if(category.script){
+			eval(category.script);
+		}
+	}	
 }
 
 function mainLoop(){
@@ -121,7 +107,7 @@ function mainLoop(){
 		if(answer == "sleep"){
 			interested = false;
 		}else{
-			runCategory(findCategory(answer));
+			console.log(HAL.runCategory(HAL.findCategory(answer)));
 		}
 
 		if(interested){
@@ -137,5 +123,6 @@ function mainLoop(){
 
 }
 
-loadAIML('bootstrap.aiml');
+ut.setRoutines(HAL);
+HAL.loadAIML('bootstrap.aiml');
 mainLoop();
