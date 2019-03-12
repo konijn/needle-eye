@@ -15,6 +15,8 @@ module.exports = {
 		console.log('I ran');
 		console.log(routines);
 		routines.loadAIML('ut.aiml');
+		let out = routines.runCategory(routines.findCategory('TEST WHOAMI'));
+		console.log(out);
 		//loadAIML('ut.aiml');
 	}
 
