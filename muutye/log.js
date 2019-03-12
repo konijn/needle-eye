@@ -21,10 +21,10 @@ module.exports = {
 			}
 		} else{
 			if(this.logColor==WARNING){
-				level = level.yellow;
+				level = level.toString().yellow;
 			}
 			if(this.logColor==ERROR){
-				level = level.red;
+				level = level.toString().red;
 			}
 			console.log(level, ...rest);
 		}
