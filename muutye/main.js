@@ -1,7 +1,7 @@
 //Converted AIML files come from
 //https://github.com/hosford42/aiml_bot/tree/master/aiml_bot
 //Files were converted with http://www.utilities-online.info/xmltojson/
-
+//Colors are provided by https://github.com/Marak/colors.js
 
 const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
@@ -71,8 +71,8 @@ let HAL = {
 			HAL.parse(json);
 		}
 		catch(error) {
-			console.log('Caught an error', error);
-  		log(ERROR, error);
+			//console.log('Caught an error', error);
+			log(ERROR, error);
 		}
 	},
 
@@ -93,8 +93,11 @@ let HAL = {
 		if(category.script){
 			eval(category.script);
 		}
-	}	
-}
+		if(category.template){
+			return category.template;
+		}
+	}
+};
 
 function mainLoop(){
 
@@ -107,7 +110,10 @@ function mainLoop(){
 		if(answer == "sleep"){
 			interested = false;
 		}else{
-			console.log(HAL.runCategory(HAL.findCategory(answer)));
+			let out = HAL.runCategory(HAL.findCategory(answer));
+			if(out){
+				console.log(out);
+			}
 		}
 
 		if(interested){
