@@ -5,7 +5,7 @@
       {
         "pattern": "TEST WHOAMI",
         "template": "My name is Muutye"
-      },
+      }
     ]
   }
 }
