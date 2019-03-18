@@ -1,3 +1,5 @@
+const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+
 const DEBUG = 0;
 const WARNING = 4;
 const ERROR = 8;
@@ -16,6 +18,7 @@ module.exports = {
 			}
 			if(level==CATASTROPHE){
 				console.log('> Muutye screams in agony..'.red);
+				console.log(new Error().stack);
 				io.close();
 				process.exit();
 			}
