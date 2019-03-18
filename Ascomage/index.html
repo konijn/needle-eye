@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Ascomage</title>
+    <script type="text/javascript" src="log.js"></script>
+    <script type="text/javascript" src="hero.js"></script>
+    <script type="text/javascript" src="cards.js"></script>
+    <script type="text/javascript" src="tests.js"></script>
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="ascomage.js"></script>
+    <link rel="stylesheet" href="ascomage.css" media="screen">
+  </head>
+  <body>
+    <center>Ascomage</center>
+    <table>
+      <tr>
+        <td id="menubar">
+          New Game
+        </td>
+        <td id="playzone">
+
+        </td>        
+      </tr>
+    </table>
+  </body>
+</html>
+<!-- DOM is loaded -->
+<script>
+  //One global to rule them all
+  game = new Game();
+  game.restart();
+</script>

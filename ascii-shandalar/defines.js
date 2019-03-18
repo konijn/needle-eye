@@ -1,0 +1,3 @@
+
+
+var eggShell = '#ffefc1';

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Author" content="konijn@gmail.com">
+  <title>Unidraw</title>
+  <link rel='stylesheet' href='unidraw.css' type='text/css' media='all'/> 
+ </head>
+ <body>
+   <!-- This is where all the magic shows -->
+   <canvas width="800" height="600" id="canvas"></canvas>
+   <!-- To be used when the user presses Control-C -->
+   <textarea type='text' id='clipboard' style='position:absolute;left: -1000px'></textarea>
+   <!-- This is where all the magic happens -->
+   <script src="box.js"></script>
+   <script src="cursor.js"></script>
+   <script src="unidraw.js"></script>
+ </body>
+</html>

@@ -1,0 +1,44 @@
+body {
+    -webkit-touch-callout: none;
+    /*Size Adjust*/
+    -webkit-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    /*User Select*/
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    /*Background*/
+    background-color: black;
+    background-attachment: fixed;
+    /*Sizing*/
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    /*Font*/
+    color: #41FF00;
+    font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+    white-space: pre;
+}
+
+/* Old Skool colors, update screen.js when adding colors */
+db {color:blue}           /*b black*/
+gg {color:green}          /*g green*/
+c  {color:darkcyan}       /*c blue-green*/
+r  {color:red}            /*r red*/
+m  {color:magenta}        /*P pink*/
+pp {color:purple}         /*p purple*/
+rb {color:brown}          /*m mahogany*/
+y  {color:yellow}         /*y yellow*/
+g  {color:grey}           /*w grey (dark white ;)*/
+dg {color:dimgray}        /*d dim grey*/
+bb {color:CornflowerBlue} /*F corn flower blue*/
+bg {color:Chartreuse}     /*G light green*/
+bc {color:Cyan}           /*C bright blue-green*/
+w  {color:white}          /*W bright white*/
+o  {color:orange}         /*o orange*/
+t  {color: #41FF00}       /*t terminal green*/
+ew {color: #FFEFC1}       /*ew egg white*/
+u  { cursor: pointer}     /*Emulate button*/

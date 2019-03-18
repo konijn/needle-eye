@@ -1,0 +1,9 @@
+body  {background-color: black; color: limegreen}
+table {width: 100%}
+tr    {width: 100%}
+
+#playzone {width: 33.33%}
+#logzone  {width: 33.33%}
+
+.u = {text-decoration: underline}
+.b = {font-weight: bold}

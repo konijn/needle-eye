@@ -1,4 +1,5 @@
 //Text Merchant 0.1
+//Vue Style
 
 var ui, game, data;
 

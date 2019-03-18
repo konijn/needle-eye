@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dominaire</title>
+    <script type="text/javascript" src="dominaire.js"></script>
+    <link rel="stylesheet" href="dominaire.css" media="screen">
+  </head>
+  <body>
+    <center>Dominaire</center>
+    <table>
+      <tr>
+        <td id="menubar">
+          New Game
+        </td>
+        <td id="playzone">
+
+        </td>
+        <td id="log">
+          New Game
+        </td>                
+      </tr>
+    </table>
+  </body>
+</html>
+<!-- DOM is loaded -->
+<script>
+  //One global to rule them all
+  game = new Game();
+  game.restart();
+</script>

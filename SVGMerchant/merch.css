@@ -1,0 +1,33 @@
+/* Pretty colors and such */
+body {
+  background-color: black;
+  /* Foreground is 'merino' */
+  color: rgb(225, 219, 208);
+  height: 100%
+  background: black;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+canvas {
+  display: inline-block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+canvas:active {
+  cursor: pointer;
+  cursor: grabbing;
+}
+
+.message {
+  position:absolute;
+  background-color: black;
+  color: rgb(225, 219, 208);  
+  z-index: 2; 
+  bottom: 30px;
+}

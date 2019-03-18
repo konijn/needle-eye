@@ -1,0 +1,10 @@
+body  {background-color: black; color: limegreen}
+table {width: 100%; border-collapse: collapse;}
+tr    {width: 100%}
+td    {border-width: 1px;border-color: limegreen;border-style: solid;}
+
+#menubar  {width: 20%}
+#playzone {width: 80%}
+
+/*63.5mm X 88.9mm*/
+.Card { border-width: 1px; border-color: limegreen; border-style: solid; width:127px; height: 178px }
