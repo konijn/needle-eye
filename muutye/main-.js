@@ -4,11 +4,11 @@
 //Colors are provided by https://github.com/Marak/colors.js
 
 //Node
-const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+//Evil global :/
+io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 //NPM
 const colors = require('colors');
-//const [DOMParser] = require('xmldom');
-DOMParser = require('xmldom').DOMParser;
+const xmldom = require('xmldom');
 //Mine, all mine!
 const fs = require('fs');
 const ut = require('./ut.js');
@@ -26,23 +26,36 @@ let interested = true;
 const supportedAIMLVersion = '1.0';
 //The brain..
 
+let Igor = {
+	
+	getUniqueTag: function getkUniqueTag(node, tag){
+		const nodeList = node.getElementsByTagName(tag);
+		if(nodeList.length === 0){
+			log(CATASTROPHE,`Found no ${tag} tag`);
+		}else if(nodeList.length > 1){
+			log(WARNING,`Got ${nodeList.length-1} too many ${tag} tags in ${node.tagName}`);
+		}
+		return nodeList[0];
+	}
+	
+	
+	
+}
+
 let HAL = {
 	cue: 'Muutye awakens..', //Cue because prompt is already taken
 	interested: true, //As long as we are interested, we keep going
 	supportedAIMLVersion: '1.0', //What AIML version do we support?
+	
+	io: io,
 	
 	brain : {
 		categories: []
 	},
 	
 	parse: function parse(doc){
-		//console.log(o);
-		//Do we have an aiml file?
-		aimlList = doc.getElementsByTagName('aiml');
-		if(aimlList.length != 1){
-			log(CATASTROPHE, `AIML files should have 1 aiml tag, found ${aimlList.length}`);
-		}
-		const aiml = aimlList[0];
+		
+		const aiml = Igor.getUniqueTag(doc, 'aiml');
 		const aimlVersion = aiml.getAttribute('version');
 		if(aimlVersion === undefined){
 			log(WARNING,"aiml files should have a top level aiml member");
@@ -50,24 +63,23 @@ let HAL = {
 		if(aimlVersion != supportedAIMLVersion){
 			log(WARNING,`Muutye understands version ${supportedAIMLVersion} not ${aiml.version}`);
 		}
-		console.log('yay!');
 		//Get categories
 		let categories = aiml.getElementsByTagName('category');
-		if(!categories.length){
-			log(WARNING,"No categories were found");
-		}		
-		for(const counter in categories){
+		log(DEBUG,`${categories.length} categories were loaded`);
+		let brainCategories = [];
+		for(let counter = 0; counter < categories.length; counter++){
 			const category = categories[counter];
-			const patternCount = category.getElementsByTagName('pattern').length;
-			if(patternCount != 1){
-				log(WARNING, `Category ${counter} has no pattern`);
-			}else{
-				//Lowercase patterns to harmonize
-				category[counter].pattern = category[counter].pattern.toLowerCase();
-			}
+			const pattern = Igor.getUniqueTag(category, 'pattern');
+			let jCategory = {
+				pattern: pattern.textContent.toLowerCase(),
+				template: Igor.getUniqueTag(category, 'template')
+			};
+			brainCategories.push(jCategory);
 		}
-		//Add the category to the brain
-		HAL.brain.categories = HAL.brain.categories.concat(aiml.category);
+		log(DEBUG, brainCategories);
+		//Add the categories to the brain
+		HAL.brain.categories = HAL.brain.categories.concat(brainCategories);
+		
 	},
 	
 	loadAIML: function loadAIML(filename){
@@ -76,17 +88,15 @@ let HAL = {
 		
 		try {
 			let content = fs.readFileSync(filename).toString();
-			console.log(content);
 			if(content.startsWith('<xml')){
 				content = '<xml xmlns="a" xmlns:c="./lite">\n' + content + '</xml>';
 			}
-			const doc = new DOMParser().parseFromString(content, 'text/xml');
-			console.log(doc.toString())
+			const doc = new xmldom.DOMParser().parseFromString(content, 'text/xml');
 			HAL.parse(doc);
 		}
 		catch(error) {
-			//console.log('Caught an error', error);
 			log(ERROR, error);
+			console.log(error.stack);
 		}
 	},
 
@@ -95,20 +105,27 @@ let HAL = {
 
 		for(const category of HAL.brain.categories){
 			if(category.pattern == input){
-				log(DEBUG, category);
 				return category;
 			}
 		}
 	},
 	
 	runCategory: function runCategory(category){
+		//console.log(category);
 		if(!category)
 			return;
+		for(let counter = 0 ; counter < category.template.childNodes.length; counter++){
+			const child = category.template.childNodes[counter];
+			console.log('Child', counter, child);
+		}
+		//console.log( category.template.childNodes.toString() );
+		
+		
 		if(category.script){
 			eval(category.script);
 		}
 		if(category.template){
-			return category.template;
+			return "Got ya";//category.template;
 		}
 	}
 };
@@ -124,7 +141,7 @@ function restart(){
 	        });
 	    });
 	    process.exit();
-	}, 0);	
+	}, 0);
 }
 
 function mainLoop(){
@@ -138,7 +155,7 @@ function mainLoop(){
 		if(answer == "sleep"){
 			interested = false;
 		}else if(answer == '`'){
-			restart();	
+			restart();
 		}else{
 			let out = HAL.runCategory(HAL.findCategory(answer));
 			if(out){
@@ -160,5 +177,5 @@ function mainLoop(){
 }
 
 ut.setRoutines(HAL);
-HAL.loadAIML('bootstrap.aiml');
+HAL.loadAIML('1cat.aiml');
 mainLoop();
