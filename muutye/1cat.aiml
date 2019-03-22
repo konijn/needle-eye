@@ -1,0 +1,12 @@
+<aiml version="1.0">
+
+	<category>
+		<pattern>RUN UT</pattern>
+		<template>
+			About tor run the unit tests
+			<script>ut.run();</script>
+			Unit tests have run
+		</template>
+	</category>
+
+</aiml>
