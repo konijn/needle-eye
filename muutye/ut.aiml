@@ -1,8 +1,46 @@
 <aiml version="1.0">
 
+	<!-- Starter tests -->
 	<category>
 		<pattern>TEST WHOAMI</pattern>
 		<template>My name is Muutye</template>
 	</category>
+	<category>
+		<pattern>TEST BOT TAG</pattern>
+		<template>My name is <bot name="name"/></template>
+	</category>
 
+	<!-- Condition and Predicate Tests-->
+	<!-- 1. Set predicate "gender" to "Male" -->
+	<!-- 2. Set predicate "gender" to "Female" -->
+	<category>
+		<pattern>TEST CONDITION NAME VALUE</pattern>
+		<template>
+			<condition name="gender" value="Male">You are handsome</condition>
+		</template>
+	</category>
+	<!-- 3. Still have predicate "gender" to "Female" -->
+	<!-- 4. Set predicate "gender" to "Bot" -->
+	<category>
+		<pattern>TEST CONDITION NAME</pattern>
+		<template>
+			<condition name="gender">
+				<li value="Male">You are handsome</li>
+				<li value="Female">You are beautiful</li>
+				<li>You are genderless</li>
+			</condition>
+		</template>
+	</category>
+	<!-- 5. Still have predicate "gender" to "Bot" -->
+	<!-- 6. Set predicate "gender" to "Male" -->
+	<category>
+		<pattern>TEST CONDITION</pattern>
+		<template>
+			<condition>
+				<li name="gender" value="Male">You are handsome</li>
+				<li name="gender" value="Female">You are beautiful</li>
+				<li>You are genderless</li>
+			</condition>
+		</template>
+	</category>
 </aiml>

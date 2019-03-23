@@ -1,7 +1,8 @@
 //Converted AIML files come from
 //https://github.com/hosford42/aiml_bot/tree/master/aiml_bot
-//XML DOM is provided by https://www.npmjs.com/package/xmldom
 //Colors are provided by https://github.com/Marak/colors.js
+//XML Beautifier https://codebeautify.org/xmlviewer
+//XML DOM is provided by https://www.npmjs.com/package/xmldom
 
 //Node
 //Evil global :/
@@ -45,17 +46,19 @@ let Igor = {
 			log(logLevel, category.pattern);
 		}
 	}
-}
+};
 
 let HAL = {
 	cue: 'Muutye awakens..', //Cue because prompt is already taken
 	interested: true, //As long as we are interested, we keep going
 	supportedAIMLVersion: '1.0', //What AIML version do we support?
+	defaultResponse: 'Got ya', //What to respond if we don't get it?
 	
 	io: io,
 	
 	brain : {
-		categories: []
+		categories: [],
+		predicates: {}
 	},
 	
 	parse: function parse(doc){
@@ -115,33 +118,82 @@ let HAL = {
 		}
 	},
 	
+	setPredicate: function setPredicate(name, value){
+		HAL.brain.predicates[name] = value;
+	},
+	
+	getPredicate: function getPredicate(name){
+		return HAL.brain.predicates[name];
+	},
+	
+	hasPredicate: function setPredicate(name){
+		return HAL.brain.predicates[name] !== undefined;
+	},
+	
 	runNode: function runNode(node){
 		//console.log(category);
 		let out = '';
+		let defaultResponse = '';
 		if(!node)
 			return;
 		for(let counter = 0 ; counter < node.childNodes.length; counter++){
 			const child = node.childNodes[counter];
-			console.log('Child', counter, child.nodeType, child.nodeName);
+			const parent = child.parentNode;
+			console.log('Child', counter, child.nodeName, parent.nodeName);
 			//Text node
 			if(child.nodeName == '#text'){
-				out += child.nodeValue.trim();
+				out += child.nodeValue.trimStart();
 			}else if(child.nodeName == 'br'){
 				out += '\n';
+			}else if(child.nodeName == 'bot'){
+				if(child.hasAttribute('name')){
+					out += 'Muutye';
+				}
+			}else if(child.nodeName == 'condition'){
+				if(child.hasAttribute('name') && child.hasAttribute('value')){
+					const name = child.getAttribute('name');
+					const value = child.getAttribute('value');
+					const predicateValue = HAL.getPredicate(name);
+					log(DEBUG, `Condition ${name};${value}<>${predicateValue}`);
+					if(predicateValue == value){
+						out += runNode(child);
+					}
+				}else{
+					out += runNode(child);
+				}
+			}else if(child.nodeName == 'li' && parent.nodeName == 'condition'){
+				if(child.hasAttribute('value') && parent.hasAttribute('name')){
+					const name = parent.getAttribute('name');
+					const value = child.getAttribute('value');
+					const predicateValue = HAL.getPredicate(name);
+					log(DEBUG, `Condition ${name};${value}<>${predicateValue}`);
+					if(predicateValue == value){
+						out += runNode(child);
+					}
+				}else if(child.hasAttribute('value') && child.hasAttribute('name')){
+					const name = child.getAttribute('name');
+					const value = child.getAttribute('value');
+					const predicateValue = HAL.getPredicate(name);
+					log(DEBUG, `Condition ${name};${value}<>${predicateValue}`);
+					if(predicateValue == value){
+						out += runNode(child);
+					}
+				}else{
+					defaultResponse = runNode(child);
+				}
 			}else if(child.nodeName == 'script'){
-				//
+				//The source can be composed with tags and text
 				const source = runNode(child);
+				//Eval is evil, at least warn the user
 				log(WARNING, 'Executing ' + source+ '\n');
 				try{
 					out += eval(source);
 				}catch(exception){
 					log(ERROR, `Something went horribly wrong: ${exception}`);
 				}
-				//console.log(child.)
 			}
 		}
-		//console.log( category.template.childNodes.toString() );
-		return out || "Got ya";
+		return out || defaultResponse || HAL.defaultResponse;
 	}
 };
 

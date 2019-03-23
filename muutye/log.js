@@ -5,7 +5,7 @@ const WARNING = 4;
 const SUCCESS = 6;
 const ERROR = 8;
 const CATASTROPHE = 16;
-let logLevel = WARNING;
+let logLevel = DEBUG;
 
 module.exports = {
 
