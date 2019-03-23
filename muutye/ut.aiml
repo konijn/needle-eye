@@ -1,0 +1,8 @@
+<aiml version="1.0">
+
+	<category>
+		<pattern>TEST WHOAMI</pattern>
+		<template>My name is Muutye</template>
+	</category>
+
+</aiml>

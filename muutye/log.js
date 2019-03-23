@@ -2,9 +2,10 @@
 
 const DEBUG = 0;
 const WARNING = 4;
+const SUCCESS = 6;
 const ERROR = 8;
 const CATASTROPHE = 16;
-let logLevel = DEBUG;
+let logLevel = WARNING;
 
 module.exports = {
 
@@ -12,7 +13,7 @@ module.exports = {
 		//Bad caller, no log level.
 		if(!rest){
 			console.log(level);
-		}else if(level === 0 || level === 4 || level === 8 || level === 16){
+		}else if(level === 0 || level === 4 || level == 6 || level === 8 || level === 16){
 			if(level >= logLevel){
 				log.call({logColor: level},...rest);
 			}
@@ -23,6 +24,9 @@ module.exports = {
 				process.exit();
 			}
 		} else{
+			if(this.logColor==SUCCESS){
+				level = level.toString().green;
+			}
 			if(this.logColor==WARNING){
 				level = level.toString().yellow;
 			}
