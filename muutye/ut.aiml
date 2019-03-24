@@ -43,4 +43,17 @@
 			</condition>
 		</template>
 	</category>
+
+	<!-- date -->
+	<category>
+		<pattern>TEST DATE</pattern>
+		<template>The date is <date/></template>
+	</category>
+
+	<!-- formal -->
+	<category>
+		<pattern>TEST FORMAL</pattern>
+		<template><formal>this SHOULD get capitalized</formal></template>
+	</category>
+
 </aiml>

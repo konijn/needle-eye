@@ -64,6 +64,12 @@ module.exports = {
 		out = routines.runNode(routines.findCategory('Test Condition').template);
 		updateTally(tally, expectEquals('Test Condition 2', 'You are handsome', out));
 		
+		out = routines.runNode(routines.findCategory('Test Date').template);
+		updateTally(tally, expectEquals('Test Date', 'The date is ' + (new Date()).toDateString(), out));
+
+		out = routines.runNode(routines.findCategory('Test Formal').template);
+		updateTally(tally, expectEquals('Test Formal', 'This Should Get Capitalized', out));
+		
 		//Colorize the state of affairs
 		if(tally.total == tally.success){
 			tally.success = (tally.success+'').green;

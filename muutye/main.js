@@ -3,6 +3,7 @@
 //Colors are provided by https://github.com/Marak/colors.js
 //XML Beautifier https://codebeautify.org/xmlviewer
 //XML DOM is provided by https://www.npmjs.com/package/xmldom
+//Substitution files come from https://github.com/pandorabots/substitutions/tree/master/lib
 
 //Node
 //Evil global :/
@@ -10,6 +11,7 @@ io = require('readline').createInterface({ input: process.stdin, output: process
 //NPM
 const colors = require('colors');
 const xmldom = require('xmldom');
+const moment = require('moment')
 //Mine, all mine!
 const fs = require('fs');
 const ut = require('./ut.js');
@@ -45,6 +47,10 @@ let Igor = {
 		for(const category of categories){
 			log(logLevel, category.pattern);
 		}
+	},
+	
+	capitalize: function capitalize(s){
+		return s.split(" ").map(s => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(" ");
 	}
 };
 
@@ -149,6 +155,14 @@ let HAL = {
 				if(child.hasAttribute('name')){
 					out += 'Muutye';
 				}
+			}else if(child.nodeName == 'date'){
+				if(child.hasAttribute('day')){
+					out += moment().format('dddd');
+				}else{
+					out += (new Date()).toDateString();
+				}
+			}else if(child.nodeName == 'formal'){
+				out += Igor.capitalize(runNode(child));
 			}else if(child.nodeName == 'condition'){
 				if(child.hasAttribute('name') && child.hasAttribute('value')){
 					const name = child.getAttribute('name');

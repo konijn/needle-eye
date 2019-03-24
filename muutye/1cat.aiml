@@ -3,8 +3,8 @@
 	<category>
 		<pattern>RUN UT</pattern>
 		<template>
-			About to run the unit tests<br></br>
-			<script>ut.run();</script><br></br>
+			About to run the unit tests<br/>
+			<script>ut.run();</script><br/>
 			Unit tests have run
 		</template>
 	</category>
