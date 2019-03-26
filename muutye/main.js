@@ -16,6 +16,7 @@ const moment = require('moment')
 const fs = require('fs');
 const ut = require('./ut.js');
 const log = require('./log.js').log;
+const sub = require('./substitute.js').substitute;
 
 const DEBUG = 0;
 const WARNING = 4;
@@ -155,6 +156,8 @@ let HAL = {
 				if(child.hasAttribute('name')){
 					out += 'Muutye';
 				}
+			}else if(child.nodeName == 'gender'){
+				out += sub('gender', runNode(child));
 			}else if(child.nodeName == 'date'){
 				if(child.hasAttribute('day')){
 					out += moment().format('dddd');

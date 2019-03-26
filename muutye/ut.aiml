@@ -56,4 +56,10 @@
 		<template><formal>this SHOULD get capitalized</formal></template>
 	</category>
 
+	<!-- gender substitutions-->
+	<category>
+		<pattern>TEST GENDER</pattern>
+		<template><gender>She'd told him she heard that his hernia is history</gender></template>
+	</category>
+
 </aiml>

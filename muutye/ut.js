@@ -70,6 +70,13 @@ module.exports = {
 		out = routines.runNode(routines.findCategory('Test Formal').template);
 		updateTally(tally, expectEquals('Test Formal', 'This Should Get Capitalized', out));
 		
+		out = routines.runNode(routines.findCategory('Test Gender').template);
+		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
+		
+		out = routines.runNode(routines.findCategory('Test Gender').template);
+		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
+		
+		
 		//Colorize the state of affairs
 		if(tally.total == tally.success){
 			tally.success = (tally.success+'').green;
