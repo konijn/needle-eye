@@ -1,8 +1,4 @@
 
-
-console.log('Hello world, I am Yutee!');
-
-
 function expectEquals(testCase, expected, actual){
 	if(expected == actual){
 		console.log(testCase, 'Passed'.green);
@@ -73,6 +69,7 @@ module.exports = {
 		out = routines.runNode(routines.findCategory('Test Gender').template);
 		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
 		
+		//Twice, to test the caching of the substitutions
 		out = routines.runNode(routines.findCategory('Test Gender').template);
 		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
 		

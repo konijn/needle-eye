@@ -6,6 +6,7 @@
 //Substitution files come from https://github.com/pandorabots/substitutions/tree/master/lib
 
 //Node
+const fs = require('fs');
 //Evil global :/
 io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 //NPM
@@ -13,16 +14,9 @@ const colors = require('colors');
 const xmldom = require('xmldom');
 const moment = require('moment')
 //Mine, all mine!
-const fs = require('fs');
 const ut = require('./ut.js');
 const log = require('./log.js').log;
 const sub = require('./substitute.js').substitute;
-
-const DEBUG = 0;
-const WARNING = 4;
-const SUCCESS = 6;
-const ERROR = 8;
-const CATASTROPHE = 16;
 
 let cue = 'Muutye awakens..';
 //As long as we are interested, we keep going

@@ -1,10 +1,10 @@
 //const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
-const DEBUG = 0;
-const WARNING = 4;
-const SUCCESS = 6;
-const ERROR = 8;
-const CATASTROPHE = 16;
+DEBUG = 0;
+WARNING = 4;
+SUCCESS = 6;
+ERROR = 8;
+CATASTROPHE = 16;
 let logLevel = DEBUG;
 
 module.exports = {
