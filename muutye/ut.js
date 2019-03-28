@@ -73,7 +73,13 @@ module.exports = {
 		out = routines.runNode(routines.findCategory('Test Gender').template);
 		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
 		
-		
+		out = routines.runNode(routines.findCategory('Test Get and Set').template);
+		updateTally(tally, expectEquals('Test Get and Set', "I like cheese. My favorite food is cheese", out));
+
+		out = routines.runNode(routines.findCategory('Test Forget Gossip Load').template);
+		updateTally(tally, expectEquals('Test Forget Gossip Load', "Hello World", out));
+
+
 		//Colorize the state of affairs
 		if(tally.total == tally.success){
 			tally.success = (tally.success+'').green;

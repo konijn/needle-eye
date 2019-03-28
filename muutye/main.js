@@ -12,18 +12,13 @@ io = require('readline').createInterface({ input: process.stdin, output: process
 //NPM
 const colors = require('colors');
 const xmldom = require('xmldom');
-const moment = require('moment')
+const moment = require('moment');
 //Mine, all mine!
 const ut = require('./ut.js');
 const log = require('./log.js').log;
 const sub = require('./substitute.js').substitute;
 
-let cue = 'Muutye awakens..';
-//As long as we are interested, we keep going
-let interested = true;
-//What AIML version do we support?
-const supportedAIMLVersion = '1.0';
-//The brain..
+const botName = 'Muutye';
 
 let Igor = {
 	
@@ -46,11 +41,15 @@ let Igor = {
 	
 	capitalize: function capitalize(s){
 		return s.split(" ").map(s => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(" ");
+	},
+	
+	isValidFileName: function isValidFileName(s){
+		return s.match(/^\w{1,12}\.\w{1,3}$/g);
 	}
 };
 
 let HAL = {
-	cue: 'Muutye awakens..', //Cue because prompt is already taken
+	cue: `${botName} awakens..`, //Cue because prompt is already taken
 	interested: true, //As long as we are interested, we keep going
 	supportedAIMLVersion: '1.0', //What AIML version do we support?
 	defaultResponse: 'Got ya', //What to respond if we don't get it?
@@ -59,7 +58,7 @@ let HAL = {
 	
 	brain : {
 		categories: [],
-		predicates: {}
+		predicates: { _id: botName}
 	},
 	
 	parse: function parse(doc){
@@ -69,8 +68,8 @@ let HAL = {
 		if(aimlVersion === undefined){
 			log(WARNING,"aiml files should have a top level aiml member");
 		}
-		if(aimlVersion != supportedAIMLVersion){
-			log(WARNING,`Muutye understands version ${supportedAIMLVersion} not ${aiml.version}`);
+		if(aimlVersion != HAL.supportedAIMLVersion){
+			log(WARNING,`${HAL.brain.predicates._id} understands version ${supportedAIMLVersion} not ${aiml.version}`);
 		}
 		//Get categories
 		let categories = aiml.getElementsByTagName('category');
@@ -148,7 +147,7 @@ let HAL = {
 				out += '\n';
 			}else if(child.nodeName == 'bot'){
 				if(child.hasAttribute('name')){
-					out += 'Muutye';
+					out += HAL.getPredicate('_id');
 				}
 			}else if(child.nodeName == 'gender'){
 				out += sub('gender', runNode(child));
@@ -171,6 +170,54 @@ let HAL = {
 					}
 				}else{
 					out += runNode(child);
+				}
+			}else if(child.nodeName == 'set'){
+				const name = child.getAttribute('name');
+				const value = runNode(child);
+				HAL.setPredicate(name, value);
+				out += value;
+			}else if(child.nodeName == 'get'){
+				const name = child.getAttribute('name');
+				const value = HAL.getPredicate(name);
+				out += value;
+			}else if(child.nodeName == 'forget'){
+				const fileName = child.getAttribute('filename');
+				if(Igor.isValidFileName(fileName)){
+					try{
+						if(fs.existsSync('out/' + fileName)){
+							fs.unlinkSync('out/' + fileName);
+							log(DEBUG, `Forgot ${'out/' + fileName}`);
+						}
+					}catch(oops){
+						log(ERROR, oops.toString());
+					}
+				}else{
+					log(CRITICAL, `Dangerous filename in <forget>: ${fileName}`);
+				}
+			}else if(child.nodeName == 'gossip'){
+				const fileName = child.getAttribute('filename');
+				if(Igor.isValidFileName(fileName)){
+					try{
+							//Create the file if it does not exist, and append!
+							fs.appendFileSync('out/' + fileName, runNode(child));
+					}catch(oops){
+						log(ERROR, oops.toString());
+					}
+				}else{
+					log(CRITICAL, `Dangerous filename in <gossip>: ${fileName}`);
+				}
+			}else if(child.nodeName == 'load'){
+				const fileName = child.getAttribute('filename');
+				if(Igor.isValidFileName(fileName)){
+					try{
+						if(fs.existsSync('out/' + fileName)){
+							out += fs.readFileSync('out/' + fileName);
+						}
+					}catch(oops){
+						log(ERROR, oops.toString());
+					}
+				}else{
+					log(CRITICAL, `Dangerous filename in <load>: ${fileName}`);
 				}
 			}else if(child.nodeName == 'li' && parent.nodeName == 'condition'){
 				if(child.hasAttribute('value') && parent.hasAttribute('name')){
@@ -224,7 +271,7 @@ function restart(){
 
 function mainLoop(){
 
-	io.question( ('> ' + cue + '\n').green + '> ', (answer) => {
+	io.question( ('> ' + HAL.cue + '\n').green + '> ', (answer) => {
 
 		//console.log("You said,", answer );
 
@@ -241,11 +288,11 @@ function mainLoop(){
 			}
 		}
 
-		if(interested){
+		if(HAL.interested){
 			//Avoid eternal call stack
 			setTimeout(mainLoop, 0);
 		}else{
-			console.log('> Muutye slumbers..'.magenta);
+			console.log(`> ${HAL.getPredicate('_id')} slumbers..`.magenta);
 			io.close();
 			process.exit();
 		}

@@ -62,4 +62,24 @@
 		<template><gender>She'd told him she heard that his hernia is history</gender></template>
 	</category>
 
+	<!-- get/set -->
+	<category>
+		<pattern>TEST GET AND SET</pattern>
+		<template>I like <set name="food">cheese</set>. My favorite food is <get name="food"/></template>
+	</category>
+
+	<!-- forget/gossip/load -->
+	<category>
+		<pattern>TEST FORGET GOSSIP LOAD</pattern>
+		<template>
+			<forget filename="tmp.txt"/><gossip filename="tmp.txt">Hello World</gossip><load filename="tmp.txt"/>
+		</template>
+	</category>
+
+	<!-- id -->
+	<category>
+		<pattern>TEST ID</pattern>
+		<template>Your id is <id/></template>
+	</category>
+
 </aiml>
