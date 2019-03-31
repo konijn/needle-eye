@@ -149,6 +149,8 @@ let HAL = {
 				if(child.hasAttribute('name')){
 					out += HAL.getPredicate('_id');
 				}
+			}if(child.nodeName =='id'){
+				out += 'anonymous';
 			}else if(child.nodeName == 'gender'){
 				out += sub('gender', runNode(child));
 			}else if(child.nodeName == 'date'){

@@ -79,6 +79,8 @@ module.exports = {
 		out = routines.runNode(routines.findCategory('Test Forget Gossip Load').template);
 		updateTally(tally, expectEquals('Test Forget Gossip Load', "Hello World", out));
 
+		out = routines.runNode(routines.findCategory('Test Id').template);
+		updateTally(tally, expectEquals('Test Id', "Your id is anonymous", out));
 
 		//Colorize the state of affairs
 		if(tally.total == tally.success){
