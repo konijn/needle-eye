@@ -20,8 +20,8 @@ module.exports = {
 				for(const counter in list){
 					let pair = list[counter];
 					//Trim first, to make the rest cleaner
-					pair[0] = pair[0].trim();
-					pair[1] = pair[1].trim();
+					pair[0] = pair[0].trim().toLowerCase();
+					pair[1] = pair[1].trim().toLowerCase();
 					//Build the lookup object
 					map[pair[0]] = pair[1];
 					map[pair[1]] = pair[0];
@@ -31,7 +31,7 @@ module.exports = {
 
 				//Finalize the regex string
 				reString = list.join('|');
-				log(DEBUG, `${map}\n${reString}`);
+				log(DEBUG, `${map.toString()}\n${reString}`);
 
 				substitutions[set] = {reString, map};
 
