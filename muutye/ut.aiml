@@ -110,4 +110,34 @@
 		<template><person2/></template>
 	</category>
 
+	<!-- random -->
+	<category>
+		<pattern>TEST RANDOM</pattern>
+		<template>
+			<random>
+				<li>response #1</li>
+				<li>response #2</li>
+				<li>response #3</li>
+			</random>
+		</template>
+	</category>
+
+	<category>
+		<pattern>TEST RANDOM EMPTY</pattern>
+		<template>
+			Nothing <random />here!</template>
+	</category>
+
+	<!-- sentence -->
+	<category>
+		<pattern>TEST SENTENCE</pattern>
+		<template><sentence>my first letter should be capitalized.</sentence></template>
+	</category>
+
+	<!-- size -->
+	<category>
+		<pattern>TEST SIZE</pattern>
+		<template>I've learned <size/> categories</template>
+	</category>
+
 </aiml>

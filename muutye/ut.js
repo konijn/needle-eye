@@ -1,25 +1,28 @@
 
 const log = require('./log.js').log;
 
+let tally;
 
 function expectEquals(testCase, expected, actual){
-	if(expected == actual){
-		console.log(testCase, 'Passed'.green);
+	const success = typeof expected == 'string' ? expected == actual : !!actual.match(expected);
+	if(success){
+		console.log(testCase, 'Passed'.green, `(${actual})`);
 	}else{
 		console.log(testCase, 'Failed'.red);
-		console.log('Expected: '.yellow, expected, 'Actual'.yellow, actual);
+		console.log('Expected:'.yellow, expected, '\nActual  :'.yellow, actual);
 	}
-	return (expected == actual);
+	return success;
 }
 
-function updateTally(tally, isSuccess){
+function updateTally(isSuccess){
 	tally.total++;
 	if(isSuccess){
 		tally.success++;
 	}
 }
 
-function runTest(categoryName, expectedResult, tally){
+function runTest(categoryName, expectedResult){
+	//console.log(`Expected: ${expectedResult}`);
 	const category = routines.findCategory(categoryName);
 	//console.log(routines);
 	if(!category){
@@ -29,7 +32,7 @@ function runTest(categoryName, expectedResult, tally){
 		log(CRITICAL, `Category ${categoryName} does not have a template`);
 	}
 	const out = routines.runNode(category.template);
-	updateTally(tally, expectEquals(`${tally.total+1}) ${categoryName}`, expectedResult, out));
+	updateTally(expectEquals(`${tally.total+1}) ${categoryName}`, expectedResult, out));
 }
 
 
@@ -42,57 +45,65 @@ module.exports = {
 	},
 
 	run : function run(){
-		let tally = {
+		tally = {
 			total: 0,
 			success: 0
 		}
 		console.log('I ran');
 		routines.loadAIML('ut.aiml');
 		
-		runTest('Test WhoAmI', 'My name is Muutye', tally);
-		runTest('Test Bot Tag', 'My name is Muutye', tally);
+		runTest('Test WhoAmI', 'My name is Muutye');
+		runTest('Test Bot Tag', 'My name is Muutye');
 		
 		routines.setPredicate('gender','Male');
-		runTest('Test Condition Name Value', 'You are handsome', tally);
+		runTest('Test Condition Name Value', 'You are handsome');
 
 		routines.setPredicate('gender','Female');
-		runTest('Test Condition Name Value', routines.defaultResponse, tally);
-		runTest('Test Condition Name', 'You are beautiful', tally);
+		runTest('Test Condition Name Value', routines.defaultResponse);
+		runTest('Test Condition Name', 'You are beautiful');
 		
 		routines.setPredicate('gender','bot');
-		runTest('Test Condition Name', 'You are genderless', tally);
-		runTest('Test Condition', 'You are genderless', tally);
+		runTest('Test Condition Name', 'You are genderless');
+		runTest('Test Condition', 'You are genderless');
 		
 		routines.setPredicate('gender','Male');
-		runTest('Test Condition', 'You are handsome', tally);
+		runTest('Test Condition', 'You are handsome');
 		
-		runTest('Test Date', 'The date is ' + (new Date()).toDateString(), tally);
+		runTest('Test Date', 'The date is ' + (new Date()).toDateString());
 		
-		runTest('Test Formal', 'This Should Get Capitalized', tally);
+		runTest('Test Formal', 'This Should Get Capitalized');
 		
-		runTest('Test Gender', "He'd told her he heard that her hernia is history", tally);
+		runTest('Test Gender', "He'd told her he heard that her hernia is history");
 
 		//Twice, to test the caching of the substitutions
-		runTest('Test Gender', "He'd told her he heard that her hernia is history", tally);
+		runTest('Test Gender', "He'd told her he heard that her hernia is history");
 
-		runTest('Test Get and Set', 'I like cheese. My favorite food is cheese', tally);
+		runTest('Test Get and Set', 'I like cheese. My favorite food is cheese');
 
-		runTest('Test Forget Gossip Load', 'Hello World', tally);
+		runTest('Test Forget Gossip Load', 'Hello World');
 
-		runTest('Test Id', 'Your id is anonymous', tally);
+		runTest('Test Id', 'Your id is anonymous');
 
-		runTest('Test Javascript', 'Eval is Evil', tally);
+		runTest('Test Javascript', 'Eval is Evil');
 
-		runTest('Test Lowercase', 'The Last Word Should Be lowercase', tally);
+		runTest('Test Lowercase', 'The Last Word Should Be lowercase');
 		
 		//Odd, very odd..
-		//runTest('Test Person', 'HE think i knows that my actions threaten him and his.', tally);
-		runTest('Test Person', 'YOU think he knows that his actions threaten you and yours.', tally);
-		//runTest('Test Person2', 'YOU think me know that my actions threaten you and yours.'', tally);
-		runTest('Test Person2', 'THEY think you know that your actions threaten them and theirs.', tally);
+		//runTest('Test Person', 'HE think i knows that my actions threaten him and his.');
+		runTest('Test Person', 'YOU think he knows that his actions threaten you and yours.');
+		//runTest('Test Person2', 'YOU think me know that my actions threaten you and yours.'');
+		runTest('Test Person2', 'THEY think you know that your actions threaten them and theirs.');
 		
-		runTest('Test Person2 I love Lucy', 'THEY love Lucy', tally);
+		runTest('Test Person2 I love Lucy', 'THEY love Lucy');
 		
+		runTest('Test Random', /response #\d/);
+		
+		runTest('Test Random Empty', 'Nothing here!');
+		
+		runTest('Test Sentence', 'My first letter should be capitalized.', tally)
+		
+		runTest('Test Size', /I've learned \d* categories/)
+
 		//Colorize the state of affairs
 		if(tally.total == tally.success){
 			tally.success = (tally.success+'').green;
