@@ -1,4 +1,7 @@
 
+const log = require('./log.js').log;
+
+
 function expectEquals(testCase, expected, actual){
 	if(expected == actual){
 		console.log(testCase, 'Passed'.green);
@@ -16,6 +19,20 @@ function updateTally(tally, isSuccess){
 	}
 }
 
+function runTest(categoryName, expectedResult, tally){
+	const category = routines.findCategory(categoryName);
+	//console.log(routines);
+	if(!category){
+		log(CRITICAL, `Could not find category ${categoryName}`);
+	}
+	if(!category.template){
+		log(CRITICAL, `Category ${categoryName} does not have a template`);
+	}
+	const out = routines.runNode(category.template);
+	updateTally(tally, expectEquals(`${tally.total+1}) ${categoryName}`, expectedResult, out));
+}
+
+
 module.exports = {
 
 	routines: undefined,
@@ -31,57 +48,51 @@ module.exports = {
 		}
 		console.log('I ran');
 		routines.loadAIML('ut.aiml');
-
-		let out = routines.runNode(routines.findCategory('Test WhoAmI').template);
-		updateTally(tally, expectEquals('TEST WHOAMI', 'My name is Muutye', out));
 		
-		out = routines.runNode(routines.findCategory('Test Bot Tag').template);
-		updateTally(tally, expectEquals('Test Bot Tag', 'My name is Muutye', out));
+		runTest('Test WhoAmI', 'My name is Muutye', tally);
+		runTest('Test Bot Tag', 'My name is Muutye', tally);
 		
 		routines.setPredicate('gender','Male');
-		out = routines.runNode(routines.findCategory('Test Condition Name Value').template);
-		updateTally(tally, expectEquals('Test Condition Name Value 1', 'You are handsome', out));
-		
+		runTest('Test Condition Name Value', 'You are handsome', tally);
+
 		routines.setPredicate('gender','Female');
-		out = routines.runNode(routines.findCategory('Test Condition Name Value').template);
-		updateTally(tally, expectEquals('Test Condition Name Value 2', routines.defaultResponse, out));
-		
-		out = routines.runNode(routines.findCategory('Test Condition Name').template);
-		updateTally(tally, expectEquals('Test Condition Name 1', 'You are beautiful', out));
+		runTest('Test Condition Name Value', routines.defaultResponse, tally);
+		runTest('Test Condition Name', 'You are beautiful', tally);
 		
 		routines.setPredicate('gender','bot');
-		out = routines.runNode(routines.findCategory('Test Condition Name').template);
-		updateTally(tally, expectEquals('Test Condition Name 2', 'You are genderless', out));
-		
-		out = routines.runNode(routines.findCategory('Test Condition').template);
-		updateTally(tally, expectEquals('Test Condition', 'You are genderless', out));
+		runTest('Test Condition Name', 'You are genderless', tally);
+		runTest('Test Condition', 'You are genderless', tally);
 		
 		routines.setPredicate('gender','Male');
-		out = routines.runNode(routines.findCategory('Test Condition').template);
-		updateTally(tally, expectEquals('Test Condition 2', 'You are handsome', out));
+		runTest('Test Condition', 'You are handsome', tally);
 		
-		out = routines.runNode(routines.findCategory('Test Date').template);
-		updateTally(tally, expectEquals('Test Date', 'The date is ' + (new Date()).toDateString(), out));
+		runTest('Test Date', 'The date is ' + (new Date()).toDateString(), tally);
+		
+		runTest('Test Formal', 'This Should Get Capitalized', tally);
+		
+		runTest('Test Gender', "He'd told her he heard that her hernia is history", tally);
 
-		out = routines.runNode(routines.findCategory('Test Formal').template);
-		updateTally(tally, expectEquals('Test Formal', 'This Should Get Capitalized', out));
-		
-		out = routines.runNode(routines.findCategory('Test Gender').template);
-		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
-		
 		//Twice, to test the caching of the substitutions
-		out = routines.runNode(routines.findCategory('Test Gender').template);
-		updateTally(tally, expectEquals('Test Gender', "He'd told her he heard that her hernia is history", out));
+		runTest('Test Gender', "He'd told her he heard that her hernia is history", tally);
+
+		runTest('Test Get and Set', 'I like cheese. My favorite food is cheese', tally);
+
+		runTest('Test Forget Gossip Load', 'Hello World', tally);
+
+		runTest('Test Id', 'Your id is anonymous', tally);
+
+		runTest('Test Javascript', 'Eval is Evil', tally);
+
+		runTest('Test Lowercase', 'The Last Word Should Be lowercase', tally);
 		
-		out = routines.runNode(routines.findCategory('Test Get and Set').template);
-		updateTally(tally, expectEquals('Test Get and Set', "I like cheese. My favorite food is cheese", out));
-
-		out = routines.runNode(routines.findCategory('Test Forget Gossip Load').template);
-		updateTally(tally, expectEquals('Test Forget Gossip Load', "Hello World", out));
-
-		out = routines.runNode(routines.findCategory('Test Id').template);
-		updateTally(tally, expectEquals('Test Id', "Your id is anonymous", out));
-
+		//Odd, very odd..
+		//runTest('Test Person', 'HE think i knows that my actions threaten him and his.', tally);
+		runTest('Test Person', 'YOU think he knows that his actions threaten you and yours.', tally);
+		//runTest('Test Person2', 'YOU think me know that my actions threaten you and yours.'', tally);
+		runTest('Test Person2', 'THEY think you know that your actions threaten them and theirs.', tally);
+		
+		runTest('Test Person2 I love Lucy', 'THEY love Lucy', tally);
+		
 		//Colorize the state of affairs
 		if(tally.total == tally.success){
 			tally.success = (tally.success+'').green;
