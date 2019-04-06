@@ -4,6 +4,8 @@
 //XML Beautifier https://codebeautify.org/xmlviewer
 //XML DOM is provided by https://www.npmjs.com/package/xmldom
 //Substitution files come from https://github.com/pandorabots/substitutions/tree/master/lib
+//Spec: http://callmom.pandorabots.com/static/reference/#aiml-2-0-reference
+//More specs: http://mctarek.free.fr/AIML/AIML_Tags.htm
 
 //Node
 const fs = require('fs');
@@ -45,6 +47,12 @@ let Igor = {
 	
 	isValidFileName: function isValidFileName(s){
 		return s.match(/^\w{1,12}\.\w{1,3}$/g);
+	},
+	
+	ensureSubFolder: function ensureSubFolder(folder){
+		if(!fs.existsSync('./' + folder)){
+			fs.mkdirSync(folder);
+		}
 	}
 };
 
@@ -59,6 +67,11 @@ let HAL = {
 	brain : {
 		categories: [],
 		predicates: { _id: botName}
+	},
+	
+	init: function init(file){
+		HAL.loadAIML(file);
+		Igor.ensureSubFolder('out');
 	},
 	
 	parse: function parse(doc){
@@ -79,7 +92,7 @@ let HAL = {
 			const category = categories[counter];
 			const pattern = Igor.getUniqueTag(category, 'pattern');
 			let jCategory = {
-				pattern: pattern.textContent.toLowerCase(),
+				pattern: pattern.textContent.toLowerCase().replace(/\*/g, '(.*)'),
 				template: Igor.getUniqueTag(category, 'template')
 			};
 			brainCategories.push(jCategory);
@@ -109,13 +122,35 @@ let HAL = {
 	},
 
 	findCategory: function findCategory(input){
-		input = input.toLowerCase();
-
+		formalized = input.toLowerCase();
 		for(const category of HAL.brain.categories){
-			if(category.pattern == input){
+			if(category.pattern.includes('*')){
+				const match = input.match(new RegExp(category.pattern, 'i'));
+			  if(match){
+			  	HAL.setMatch(match);
+			  	return category;
+			  }
+			}else if(category.pattern == formalized){
 				return category;
 			}
 		}
+	},
+	
+	setMatch: function setMatch(match){
+		log(DEBUG, match);
+		HAL.brain.match = match;
+	},
+	
+	getMatch: function getMatch(){
+		return HAL.brain.match;
+	},
+	
+	clearMatch: function clearMatch(){
+		HAL.brain.match = undefined;
+	},
+	
+	hasMatch: function hasMatch(){
+		return !!HAL.brain.match;
 	},
 	
 	setPredicate: function setPredicate(name, value){
@@ -153,6 +188,12 @@ let HAL = {
 				out += 'anonymous';
 			}else if(child.nodeName == 'gender'){
 				out += sub('gender', runNode(child));
+			}else if(child.nodeName == 'person'){
+				out += sub('person', runNode(child));
+			}else if(child.nodeName == 'person2'){
+				out += sub('person2', runNode(child));
+			}else if(child.nodeName == 'lowercase'){
+				out += runNode(child).toLowerCase();
 			}else if(child.nodeName == 'date'){
 				if(child.hasAttribute('day')){
 					out += moment().format('dddd');
@@ -241,7 +282,7 @@ let HAL = {
 				}else{
 					defaultResponse = runNode(child);
 				}
-			}else if(child.nodeName == 'script'){
+			}else if(child.nodeName == 'script' || child.nodeName == 'javascript'){
 				//The source can be composed with tags and text
 				const source = runNode(child);
 				//Eval is evil, at least warn the user
@@ -252,6 +293,10 @@ let HAL = {
 					log(ERROR, `Something went horribly wrong: ${exception}`);
 				}
 			}
+		}
+		//For empty tags, consider the star approach
+		if(!out && !node.childNodes.length && HAL.hasMatch()){
+			return HAL.getMatch()[1];
 		}
 		return out || defaultResponse || HAL.defaultResponse;
 	}
@@ -304,5 +349,5 @@ function mainLoop(){
 }
 
 ut.setRoutines(HAL);
-HAL.loadAIML('1cat.aiml');
+HAL.init('1cat.aiml');
 mainLoop();
