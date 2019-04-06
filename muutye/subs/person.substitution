@@ -46,17 +46,5 @@
 [" I ", " you "],
 [" me ", " you "],
 [" my ", " your "],
-[" your ", " my "],
-[" ich war ", " er war "],
-[" ich bin ", " er ist "],
-[" ich ", " er "],
-[" mein ", " sein "],
-[" meins ", " seins "],
-[" mit dir ", " mit mir "],
-[" dir ", " mir "],
-[" fuer dich ", " fuer mich "],
-[" bist du ", " bin ich "],
-[" du ", " ich "],
-[" dein ", " mein "],
-[" deins ", " meins "]
+[" your ", " my "]
 ]
