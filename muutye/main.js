@@ -9,52 +9,24 @@
 
 //Node
 const fs = require('fs');
+
 //Evil global :/
 io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+
 //NPM
 const colors = require('colors');
 const xmldom = require('xmldom');
 const moment = require('moment');
+
 //Mine, all mine!
+require('./base.js');
 const ut = require('./ut.js');
 const log = require('./log.js').log;
 const sub = require('./substitute.js').substitute;
+const Igor = require('./igor.js')
+
 
 const botName = 'Muutye';
-
-let Igor = {
-	
-	getUniqueTag: function getkUniqueTag(node, tag){
-		const nodeList = node.getElementsByTagName(tag);
-		if(nodeList.length === 0){
-			log(CATASTROPHE,`Found no ${tag} tag`);
-		}else if(nodeList.length > 1){
-			log(WARNING,`Got ${nodeList.length-1} too many ${tag} tags in ${node.tagName}`);
-		}
-		return nodeList[0];
-	},
-	
-	dumpPatterns: function dumpPatterns(categories, logLevel){
-		logLevel = logLevel || SUCCESS;
-		for(const category of categories){
-			log(logLevel, category.pattern);
-		}
-	},
-	
-	capitalize: function capitalize(s){
-		return s.split(" ").map(s => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(" ");
-	},
-	
-	isValidFileName: function isValidFileName(s){
-		return s.match(/^\w{1,12}\.\w{1,3}$/g);
-	},
-	
-	ensureSubFolder: function ensureSubFolder(folder){
-		if(!fs.existsSync('./' + folder)){
-			fs.mkdirSync(folder);
-		}
-	}
-};
 
 let HAL = {
 	cue: `${botName} awakens..`, //Cue because prompt is already taken
@@ -174,10 +146,11 @@ let HAL = {
 		for(let counter = 0 ; counter < node.childNodes.length; counter++){
 			const child = node.childNodes[counter];
 			const parent = child.parentNode;
-			console.log('Child', counter, child.nodeName, parent.nodeName);
+			log(DEBUG, `'Child ${counter}: ${child.nodeName.grey}, parent: ${parent.nodeName.grey}`);
 			//Text node
 			if(child.nodeName == '#text'){
-				out += child.nodeValue.trimStart();
+				out += child.nodeValue.textNodeTrim();
+				//out += child.nodeValue.trimStart();
 			}else if(child.nodeName == 'br'){
 				out += '\n';
 			}else if(child.nodeName == 'bot'){
@@ -188,10 +161,21 @@ let HAL = {
 				out += 'anonymous';
 			}else if(child.nodeName == 'gender'){
 				out += sub('gender', runNode(child));
+			}else if(child.nodeName == 'sentence'){
+				out += Igor.sentence(runNode(child));
 			}else if(child.nodeName == 'person'){
 				out += sub('person', runNode(child));
 			}else if(child.nodeName == 'person2'){
 				out += sub('person2', runNode(child));
+			}else if(child.nodeName == 'size'){
+				out += HAL.brain.categories.length;
+			}else if(child.nodeName == 'random'){
+				const list = Igor.filterNodes(child.childNodes, n =>n .nodeName=='li');
+				log(DEBUG, `I found ${list.length} child nodes`);
+				if(list.length){
+					const entry = list[Igor.getRandomIntInclusive(0,list.length-1)];
+					out += runNode(entry);
+				}
 			}else if(child.nodeName == 'lowercase'){
 				out += runNode(child).toLowerCase();
 			}else if(child.nodeName == 'date'){
@@ -320,18 +304,19 @@ function mainLoop(){
 
 	io.question( ('> ' + HAL.cue + '\n').green + '> ', (answer) => {
 
-		//console.log("You said,", answer );
-
-		cue = 'Tell me more';
+		HAL.cue = 'Tell me more';
 
 		if(answer == "sleep"){
 			interested = false;
 		}else if(answer == '`'){
 			restart();
 		}else{
-			let out = HAL.runNode(HAL.findCategory(answer).template);
-			if(out){
-				console.log(out);
+			const category = HAL.findCategory(answer);
+			if(category && category.template){
+				const out = HAL.runNode(category.template);
+				if(out){
+					console.log(out);
+				}
 			}
 		}
 
