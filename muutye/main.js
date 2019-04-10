@@ -113,8 +113,8 @@ let HAL = {
 		HAL.brain.match = match;
 	},
 	
-	getMatch: function getMatch(){
-		return HAL.brain.match;
+	getMatch: function getMatch(index){
+		return HAL.brain.match[index||1];
 	},
 	
 	clearMatch: function clearMatch(){
@@ -150,7 +150,6 @@ let HAL = {
 			//Text node
 			if(child.nodeName == '#text'){
 				out += child.nodeValue.textNodeTrim();
-				//out += child.nodeValue.trimStart();
 			}else if(child.nodeName == 'br'){
 				out += '\n';
 			}else if(child.nodeName == 'bot'){
@@ -169,6 +168,19 @@ let HAL = {
 				out += sub('person2', runNode(child));
 			}else if(child.nodeName == 'size'){
 				out += HAL.brain.categories.length;
+			}else if(child.nodeName == 'lowercase'){
+				out += runNode(child).toLowerCase();
+			}else if(child.nodeName == 'sr'){
+				const category = routines.findCategory(HAL.getMatch());
+				//log(DEBUG, category.template);
+				out += runNode(category.template);
+			}else if(child.nodeName == 'srai'){
+				const category = routines.findCategory(runNode(child));
+				//log(DEBUG, category);
+				out += runNode(category.template);
+			}else if(child.nodeName == 'star'){
+				const index = child.getAttribute('index') || 1;
+				out += HAL.getMatch(index);
 			}else if(child.nodeName == 'random'){
 				const list = Igor.filterNodes(child.childNodes, n =>n .nodeName=='li');
 				log(DEBUG, `I found ${list.length} child nodes`);
@@ -176,8 +188,6 @@ let HAL = {
 					const entry = list[Igor.getRandomIntInclusive(0,list.length-1)];
 					out += runNode(entry);
 				}
-			}else if(child.nodeName == 'lowercase'){
-				out += runNode(child).toLowerCase();
 			}else if(child.nodeName == 'date'){
 				if(child.hasAttribute('day')){
 					out += moment().format('dddd');
@@ -280,7 +290,7 @@ let HAL = {
 		}
 		//For empty tags, consider the star approach
 		if(!out && !node.childNodes.length && HAL.hasMatch()){
-			return HAL.getMatch()[1];
+			return HAL.getMatch();
 		}
 		return out || defaultResponse || HAL.defaultResponse;
 	}
