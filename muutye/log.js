@@ -6,7 +6,7 @@ SUCCESS = 6;
 ERROR = 8;
 CATASTROPHE = 16;
 CRITICAL = 16;
-let logLevel = DEBUG;
+let logLevel = ERROR;
 
 module.exports = {
 
