@@ -100,9 +100,12 @@ module.exports = {
 		
 		runTest('Test Random Empty', 'Nothing here!');
 		
-		runTest('Test Sentence', 'My first letter should be capitalized.', tally)
+		runTest('Test Sentence', 'My first letter should be capitalized.');
 		
-		runTest('Test Size', /I've learned \d* categories/)
+		runTest('Test Size', /I've learned \d* categories/);
+		
+		runTest('test sr test srai', 'srai results: srai test passed');
+    runTest('test nested sr test srai', 'srai results: srai test passed');
 
 		//Colorize the state of affairs
 		if(tally.total == tally.success){

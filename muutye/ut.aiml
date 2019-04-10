@@ -140,4 +140,28 @@
 		<template>I've learned <size/> categories</template>
 	</category>
 
+	<!-- sr -->
+	<category>
+		<pattern>TEST SR *</pattern>
+		<template>srai results: <sr/></template>
+	</category>
+	<category>
+		<pattern>TEST NESTED SR *</pattern>
+		<template><srai>test sr <star/></srai></template>
+	</category>
+
+	<!-- srai -->
+	<category>
+		<pattern>SRAI TARGET</pattern>
+		<template>srai test passed</template>
+	</category>
+	<category>
+		<pattern>TEST SRAI</pattern>
+		<template><srai>srai target</srai></template>
+	</category>
+	<category>
+		<pattern>TEST SRAI INFINITE</pattern>
+		<template><srai>test srai infinite</srai></template>
+	</category>
+
 </aiml>
