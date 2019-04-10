@@ -106,6 +106,10 @@ module.exports = {
 		
 		runTest('test sr test srai', 'srai results: srai test passed');
     runTest('test nested sr test srai', 'srai results: srai test passed');
+    runTest('test srai', 'srai test passed');
+    runTest('test srai infinite', routines.defaultResponse);
+
+
 
 		//Colorize the state of affairs
 		if(tally.total == tally.success){

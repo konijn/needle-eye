@@ -38,7 +38,8 @@ let HAL = {
 	
 	brain : {
 		categories: [],
-		predicates: { _id: botName}
+		predicates: { _id: botName},
+		stack: new Set()
 	},
 	
 	init: function init(file){
@@ -141,8 +142,14 @@ let HAL = {
 		//console.log(category);
 		let out = '';
 		let defaultResponse = '';
+		let stack = HAL.brain.stack;
 		if(!node)
 			return;
+		if(stack.has(node)){
+			return "";
+		}else{
+			stack.add(node);
+		}
 		for(let counter = 0 ; counter < node.childNodes.length; counter++){
 			const child = node.childNodes[counter];
 			const parent = child.parentNode;
@@ -175,9 +182,13 @@ let HAL = {
 				//log(DEBUG, category.template);
 				out += runNode(category.template);
 			}else if(child.nodeName == 'srai'){
-				const category = routines.findCategory(runNode(child));
-				//log(DEBUG, category);
-				out += runNode(category.template);
+				const target = runNode(child);
+				const category = routines.findCategory(target);
+				if(category && category.template){
+					out += runNode(category.template);
+				}else{
+					log(ERROR, `Could not find category ${target}`);
+				}
 			}else if(child.nodeName == 'star'){
 				const index = child.getAttribute('index') || 1;
 				out += HAL.getMatch(index);
@@ -288,6 +299,7 @@ let HAL = {
 				}
 			}
 		}
+		stack.delete(node);
 		//For empty tags, consider the star approach
 		if(!out && !node.childNodes.length && HAL.hasMatch()){
 			return HAL.getMatch();
