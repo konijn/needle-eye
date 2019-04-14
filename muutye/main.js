@@ -167,6 +167,8 @@ let HAL = {
 				out += 'anonymous';
 			}else if(child.nodeName == 'gender'){
 				out += sub('gender', runNode(child));
+			}else if(child.nodeName == 'system'){
+				out += 'Nice Try';
 			}else if(child.nodeName == 'sentence'){
 				out += Igor.sentence(runNode(child));
 			}else if(child.nodeName == 'person'){
