@@ -108,6 +108,13 @@ module.exports = {
     runTest('test nested sr test srai', 'srai results: srai test passed');
     runTest('test srai', 'srai test passed');
     runTest('test srai infinite', routines.defaultResponse);
+    
+		runTest('intro scroll test star begin', 'Begin star matched: intro scroll');
+		runTest('test star creamy goodness middle', 'Middle star matched: creamy goodness');
+    runTest('test star end the credits roll', 'End star matched: the credits roll');
+    runTest('test star having multiple stars in a pattern makes me extremely happy', 'Multiple stars matched: having, stars in a pattern, extremely happy');
+    
+    runTest('test system', 'The system says Nice Try!');
 
 
 

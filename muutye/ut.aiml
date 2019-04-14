@@ -164,4 +164,39 @@
 		<template><srai>test srai infinite</srai></template>
 	</category>
 
+	<!-- star -->
+	<category>
+		<pattern>* TEST STAR BEGIN</pattern>
+		<template>Begin star matched: <star/></template>
+	</category>
+	<category>
+		<pattern>TEST STAR * MIDDLE</pattern>
+		<template>Middle star matched: <star/></template>
+	</category>
+	<category>
+		<pattern>TEST STAR END *</pattern>
+		<template>End star matched: <star/></template>
+	</category>
+	<category>
+		<pattern>TEST STAR * MULTIPLE * MAKES ME *</pattern>
+		<template>Multiple stars matched: <star index="1"/>, <star index="2"/>, <star index="3"/></template>
+	</category>
+
+	<!-- system -->
+	<category>
+		<pattern>TEST SYSTEM</pattern>
+		<template>The system says <system>echo hello</system>!</template>
+	</category>
+
+	<!-- that -->
+	<category>
+		<pattern>TEST THAT</pattern>
+		<template>I just said: <that index="1,1"/></template>
+	</category>
+	<category>
+		<pattern>TEST THAT</pattern>
+		<that>I JUST SAID *</that>
+		<template>I have already answered this question</template>
+	</category>
+
 </aiml>
