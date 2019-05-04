@@ -82,14 +82,23 @@ function addMessage(content) {
   setDirty('messages');
 }
 
+//Messages are objects with content and a counter
+//So we need to process those objects before displaying them
 function showMessages(){
     const list = data.messages;
-    const count = list.length;
-
-    ui.messages.innerHTML = data.messages.join("<br>");
+    //The last one is processed differently
+    const count = list.length - 1;
+    let out = "";
+    for(let counter = 0; counter < count; counter++){
+      message = list[counter];
+      out += (message.content + (message.count==1?'':`(${message.count})`) + '<br>');
+    }
+    message = list[count];
+    out += ('<span style="color: lime">' + message.content + (message.count==1?'':`(${message.count})`) + '<span>')
+    ui.messages.innerHTML = out;
 }
 
-function reset() {
+function reset(){
   localStorage.removeItem('data');
   game.data = load();
   ui.update();

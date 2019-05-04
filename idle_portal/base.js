@@ -5,6 +5,6 @@
 /*Cut, a chanaible splice of length 1*/
 Array.prototype.cut = function arrayCut(index){
   const entry = this[index];
-  this.slice(index,1);
+  this.splice(index,1);
   return entry;
 };
