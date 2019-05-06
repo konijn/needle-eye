@@ -1,1 +1,5 @@
-body {background-color: black; color: green};
+/* elements */
+body {background-color: black; color: green}
+
+/* classes */
+.clickable {cursor: pointer}
