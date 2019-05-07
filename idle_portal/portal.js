@@ -12,6 +12,26 @@ let game = new Game(),
     data = game.data,
     ui   = new UI();
 
+function Data(){
+  //Do nothing
+}
+
+Data.prototype.add = function dataAdd(id, value ){
+  value = value || 1;
+  let path = id.split(".");
+  let last = path.pop();
+  let that = this;
+  while(path.length){
+    const step = path.shift();
+    that = that[step] = that[step] || {};
+  }
+  that[last] = that[last] || 0;
+  that[last] += value;
+  this.dirty[last] = true;
+  this.dirty.data = true;
+};
+
+
 function scaffoldLoad(data) {
   //We need messages
   data.messages = data.messages || [];
@@ -23,13 +43,15 @@ function scaffoldLoad(data) {
   data.resources = data.resources || [];
   //We need to redraw everything
   data.dirty = {completely: true};
+  //Give it some methods
+  Object.setPrototypeOf(data, Data.prototype);
   return data;
 }
 
 function Portal(config){
   if(!config){
     this.type = "basic";
-    this.resources =  {common: ["stone","lumber"], uncommon: ["blueprint"], rare:["gem"]};
+    this.resources =  {common: ["resources.stone","resources.lumber"], uncommon: ["blueprint"], rare:["gem"]};
   }
 }
 
@@ -108,9 +130,10 @@ function showMessages(){
 }
 
 function clickBasicPortal(){
-  data.imps = data.imps || 0;
-  data.imps++;
-  data.dirty.imps = data.dirty.data = true;
+  //data.imps = data.imps || 0;
+  //data.imps++;
+  //data.dirty.imps = data.dirty.data = true;
+  data.add("imps");
   let portal = data.portals.query({key:"type", value:"basic"});
   portal.active = true;
   addMessage("You summon an imp");
@@ -135,22 +158,24 @@ function feedPortal(food){
     const roll = odds.d100();
     const rarity = (roll <= 96 ? "common" : roll<=99 ? "uncommon" : "rare");
     const item = portal.resources[rarity].pick();
-    data.resources[item] = data.resources[item] || 0;
-    data.resources[item]++;
-    data.dirty[item] = true;
-    data.dirty.data = true;
+    data.add(item, 1);
     addMessage(`You sacrifice ${food.an()}, ${item} appears`);
   }
 }
 
 function clickImp(){
-  feedPortal("imp");
+  if(data.imps){
+    feedPortal("imp");
+    data.add("imps", -1);
+  }else{
+    addMessage("There are no more imps left")
+  }
 }
 
 function showImps(){
   const e = ui.getSubCell(ui.getCell({row:1, col:0}, "menage"), "imps");
   e.innerHTML = `<r>Imps: ${data.imps}</r>`;
-  ui.wire("imps", clickImp);
+  e.wire(clickImp);
 }
 
 function reset(){
