@@ -3,7 +3,8 @@
   Inspiration: various idle games
 */
 /*jslint vars: true, browser: true, devel: true, esversion: 6 */
-/*jshint esversion: 6, strict: true, futurehostile: true, maxerr:200 */
+/*jshint esversion: 6, strict: true, futurehostile: true, maxerr:200, -W097  */
+/*globals UI, odds*/
 
 "use strict";
 
@@ -15,10 +16,21 @@ function scaffoldLoad(data) {
   //We need messages
   data.messages = data.messages || [];
   //We need 1 portal
-  data.portals = data.portals || ["basic"];
+  data.portals = data.portals || [new Portal()];
+  //We need blueprints
+  data.blueprints = data.blueprints || [];
+  //We need resources
+  data.resources = data.resources || [];
   //We need to redraw everything
   data.dirty = {completely: true};
   return data;
+}
+
+function Portal(config){
+  if(!config){
+    this.type = "basic";
+    this.resources =  {common: ["stone","lumber"], uncommon: ["blueprint"], rare:["gem"]};
+  }
 }
 
 function load() {
@@ -34,7 +46,6 @@ function save() {
 }
 
 function Game() {
-
   this.data = load();
   if(this.data.gameStarted){
     //Minor hack to make addMessage work, it requires data to be filled in
@@ -42,18 +53,6 @@ function Game() {
   }
   this.updateInterval = setInterval(update, 250);
 }
-
-Game.prototype.onClick = function onClick(body){
-  console.log(body);
-  if(body.label=="centerPortal"){
-    UI.createImp(ui);
-    //UI.log('You summoned an Imp');
-  }
-  if(body.label.startsWith('Imp,')){
-    UI.createLog(ui);
-    UI.remove(body);
-  }
-};
 
 function update() {
   //console.log('Tick');
@@ -104,28 +103,55 @@ function showMessages(){
       out += (message.content + (message.count==1?'':`(${message.count})`) + '<br>');
     }
     const message = list[count];
-    out += ('<span style="color: lime">' + message.content + (message.count==1?'':`(${message.count})`) + '<span>');
+    out += ('<span style="color: lime">' + message.content + (message.count==1?'':` (${message.count})`) + '<span>');
     ui.messages.innerHTML = out;
 }
 
 function clickBasicPortal(){
-  console.log("Yay");
+  data.imps = data.imps || 0;
+  data.imps++;
+  data.dirty.imps = data.dirty.data = true;
+  let portal = data.portals.query({key:"type", value:"basic"});
+  portal.active = true;
+  addMessage("You summon an imp");
 }
-
 
 //Portal(s)!!!
 function showPortals(){
   if(!ui.portals){
-    ui.add({row:0, col:0}, "portals");
+    ui.getCell({row:0, col:0}, "portals");
   }
   for(const portal of data.portals){
-    if(typeof portal == "string" && portal == "basic"){
+    if(portal.type == "basic"){
       ui.portals.innerHTML = "<p id=basicPortal>Starter Portal</p>";
       ui.wire("basicPortal", clickBasicPortal);
     }
   }
 }
 
+function feedPortal(food){
+  const portal = data.portals.query({key:"active", value:true});
+  if(portal.type=="basic"){
+    const roll = odds.d100();
+    const rarity = (roll <= 96 ? "common" : roll<=99 ? "uncommon" : "rare");
+    const item = portal.resources[rarity].pick();
+    data.resources[item] = data.resources[item] || 0;
+    data.resources[item]++;
+    data.dirty[item] = true;
+    data.dirty.data = true;
+    addMessage(`You sacrifice ${food.an()}, ${item} appears`);
+  }
+}
+
+function clickImp(){
+  feedPortal("imp");
+}
+
+function showImps(){
+  const e = ui.getSubCell(ui.getCell({row:1, col:0}, "menage"), "imps");
+  e.innerHTML = `<r>Imps: ${data.imps}</r>`;
+  ui.wire("imps", clickImp);
+}
 
 function reset(){
   localStorage.removeItem('data');
@@ -143,64 +169,3 @@ function step(timestamp) {
   let progress = timestamp - UI.last;
 
 }
-
-function UI(){
-  //Place only reference assignments here that read the static HTML
-  //dynamic references should be assigned in the showXxx routines
-  this.messages = document.getElementById('messages');
-  this.screen = document.getElementById('screen');
-  this.blank = document.body.innerHTML;
-}
-
-UI.prototype.consider= function uiConsider(property, f){
-  if(data.dirty[property] || data.dirty.completely){
-    f();
-    //Set it to undefined, so we dont save this in the JSON
-    data.dirty[property] = undefined;
-  }
-};
-
-UI.prototype.update = function uiUpdate(){
-  this.consider('messages', showMessages);
-  this.consider('portals', showPortals);
-  data.dirty.completely = undefined;
-};
-
-UI.prototype.getCell = function uiGetCell(location){
-  const row = location.row,
-        col = location.col,
-        id = `${row}-${col}`;
-  if(ui[id])
-    return ui;
-  const rows = ui.screen.rows;
-  while(!rows[row])
-    ui.screen.insertRow();
-  const lastRow = rows[row];
-  const cells = lastRow.cells;
-  while(!cells[col])
-    lastRow.insertCell();
-  const cell = cells[col];
-  cell.id = id;
-  ui[id] = cell;
-  return cell;
-};
-
-UI.prototype.add = function uiAdd(location, id){
-  const cell = ui.getCell(location);
-  const div = document.createElement("div");
-  cell.appendChild(div);
-  ui[id] = cell;
-};
-
-UI.prototype.clear = function uiClear(){
-  document.body.innerHTML = ui.blank;
-  data.dirty.completely = true;
-};
-
-UI.prototype.wire = function(id, f){
-  const e = document.getElementById(id);
-  e.addEventListener("click", f);
-  e.classList.add("clickable");
-
-  
-};
