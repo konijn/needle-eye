@@ -40,11 +40,20 @@ Object.prototype.pick = function arrayPick(){
 //Prefix something with either a or an
 String.prototype.an = function stringAn(){
   const c = this[0];
-  return (("aeyiou".includes(c))?"an ":"a ") + this;
+  return (("aeyiouAEYIOU".includes(c))?"an ":"a ") + this;
 };
 
 //Prefix something with either A or An
 String.prototype.An = function stringAN(){
   const c = this[0];
-  return (("aeyiou".includes(c))?"An ":"A ") + this;
+  return (("aeyiouAEYIOU".includes(c))?"An ":"A ") + this;
+};
+
+//Wire a div for clickin'
+HTMLDivElement.prototype.wire = function wireDiv(f){
+  if(!this.wired){
+    this.addEventListener("click", f);
+    this.classList.add("clickable");
+    this.wired = true;
+  }
 };
