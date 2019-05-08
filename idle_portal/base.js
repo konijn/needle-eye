@@ -48,3 +48,12 @@ String.prototype.An = function stringAN(){
   const c = this[0];
   return (("aeyiou".includes(c))?"An ":"A ") + this;
 };
+
+//Wire a div for clickin'
+HTMLDivElement.prototype.wire = function wireDiv(f){
+  if(!this.wired){
+    this.addEventListener("click", f);
+    this.classList.add("clickable");
+    this.wired = true;
+  }
+};

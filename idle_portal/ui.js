@@ -19,7 +19,7 @@ function UI(){
 }
 
 UI.prototype.consider= function uiConsider(property, f){
-  if(data[property] && (data.dirty[property] || data.dirty.completely)){
+  if(data[property] !== undefined && (data.dirty[property] || data.dirty.completely)){
     f();
     //Set it to undefined, so we dont save this in the JSON
     data.dirty[property] = undefined;
