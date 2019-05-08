@@ -82,7 +82,7 @@ function addMessage(content) {
     list.push({content, count:1});
   }else{
     let entry = list.cut(prior);
-    entry.count++;
+    entry.count = 1;
     list.push(entry);
   }
   while(list.length > 4){
