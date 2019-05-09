@@ -31,6 +31,11 @@ Array.prototype.pick = function arrayPick(){
   return this[Math.floor(Math.random() * this.length)];
 };
 
+//Return the last element, don't pop it
+Array.prototype.last = function arrayLast(){
+  return this[this.length-1];
+};
+
 //Pick a random value of an object
 Object.prototype.pick = function arrayPick(){
   return this[Object.keys(this).pick()];
