@@ -98,7 +98,12 @@ function setDirty(property){
 }
 
 function addMessage(content) {
+  setDirty('messages');
   let list = data.messages;
+  if(list.last().content == content){
+    list.last().count++;
+    return;
+  }
   let prior = list.findIndex(message=>message.content==content);
   if(prior == -1){
     list.push({content, count:1});
@@ -110,7 +115,6 @@ function addMessage(content) {
   while(list.length > 4){
     list.shift();
   }
-  setDirty('messages');
 }
 
 //Messages are objects with content and a counter
