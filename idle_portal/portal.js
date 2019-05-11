@@ -98,20 +98,26 @@ function setDirty(property){
 }
 
 function addMessage(content) {
+  //Either way, we will update the messages
   setDirty('messages');
+  //If it's the last message, update the counter
   let list = data.messages;
   if(list.last().content == content){
     list.last().count++;
     return;
   }
+  //Otherwise, see if we already saw that message
   let prior = list.findIndex(message=>message.content==content);
+  //If not, add it
   if(prior == -1){
     list.push({content, count:1});
   }else{
+    //Otherwise, sort it to the bottom, and set count to 1
     let entry = list.cut(prior);
     entry.count = 1;
     list.push(entry);
   }
+  //Make sure we don't show to much
   while(list.length > 4){
     list.shift();
   }
@@ -172,7 +178,7 @@ function clickImp(){
     feedPortal("imp");
     data.add("imps", -1);
   }else{
-    addMessage("There are no more imps left")
+    addMessage("There are no more imps left");
   }
 }
 
