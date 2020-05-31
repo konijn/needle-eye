@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 //const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
 DEBUG = 0;

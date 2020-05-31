@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 //Node
 const fs = require('fs');
 //Mine
@@ -14,7 +15,7 @@ const log = require('./log.js').log;
 module.exports = {
 
 	//Search for a given tag that is in a subnode, ensure there is only one
-	getUniqueTag: function getkUniqueTag(node, tag){
+	getUniqueTag: function getUniqueTag(node, tag){
 		const nodeList = node.getElementsByTagName(tag);
 		if(nodeList.length === 0){
 			log(CATASTROPHE,`Found no ${tag} tag`);
@@ -23,7 +24,17 @@ module.exports = {
 		}
 		return nodeList[0];
 	},
-	
+
+	//Search for a given tag, report whether it was found or not
+	hasTag: function hasTag(node, tag){
+		return !!node.getElementsByTagName(tag).length;
+	},
+
+	//Search for a given tag, report whether it was found or not
+	getTags: function getTags(node, tag){
+		return Array.from(node.getElementsByTagName(tag));
+	},
+
 	//Log the patterns of all provided categories
 	dumpPatterns: function dumpPatterns(categories, logLevel){
 		logLevel = logLevel || SUCCESS;
@@ -31,29 +42,29 @@ module.exports = {
 			log(logLevel, category.pattern);
 		}
 	},
-	
+
 	//THIS sentence Capitalized -> This Sentence Capitalized
 	capitalize: function capitalize(s){
 		return s.split(" ").map(s => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(" ");
 	},
-	
+
 	//THIS sentence Capitalized. -> This sentence capitalized.
 	sentence: function sentence(s){
 		return s[0].toUpperCase() + s.slice(1);
 	},
-	
+
 	//Valid filenames consist of 12 characters, a dot, and up to 3 characters
 	isValidFileName: function isValidFileName(s){
 		return s.match(/^\w{1,12}\.\w{1,3}$/g);
 	},
-	
+
 	//Check the file system, if the folder does not exist, create it
 	ensureSubFolder: function ensureSubFolder(folder){
 		if(!fs.existsSync('./' + folder)){
 			fs.mkdirSync(folder);
 		}
 	},
-	
+
 	//nodes are not arrays, so we cant use Array.prototype.filter
 	filterNodes: function filterNodes(nodes, filter){
 		const out = [];
@@ -63,7 +74,7 @@ module.exports = {
 		}
 		return out;
 	},
-	
+
 	getRandomIntInclusive: function getRandomIntInclusive(min, max) {
   	min = Math.ceil(min);
   	max = Math.floor(max);

@@ -7,6 +7,11 @@
 //Spec: http://callmom.pandorabots.com/static/reference/#aiml-2-0-reference
 //More specs: http://mctarek.free.fr/AIML/AIML_Tags.htm
 
+//Exceptions, because I cant
+//regex tag can replace the pattern tag, system will match as regex
+
+/*jshint esversion: 6 */
+
 //Node
 const fs = require('fs');
 
@@ -23,7 +28,7 @@ require('./base.js');
 const ut = require('./ut.js');
 const log = require('./log.js').log;
 const sub = require('./substitute.js').substitute;
-const Igor = require('./igor.js')
+const Igor = require('./igor.js');
 
 
 const botName = 'Muutye';
@@ -33,22 +38,22 @@ let HAL = {
 	interested: true, //As long as we are interested, we keep going
 	supportedAIMLVersion: '1.0', //What AIML version do we support?
 	defaultResponse: 'Got ya', //What to respond if we don't get it?
-	
+
 	io: io,
-	
+
 	brain : {
 		categories: [],
 		predicates: { _id: botName},
 		stack: new Set()
 	},
-	
+
 	init: function init(file){
 		HAL.loadAIML(file);
 		Igor.ensureSubFolder('out');
 	},
-	
+
 	parse: function parse(doc){
-		
+
 		const aiml = Igor.getUniqueTag(doc, 'aiml');
 		const aimlVersion = aiml.getAttribute('version');
 		if(aimlVersion === undefined){
@@ -63,23 +68,36 @@ let HAL = {
 		let brainCategories = [];
 		for(let counter = 0; counter < categories.length; counter++){
 			const category = categories[counter];
-			const pattern = Igor.getUniqueTag(category, 'pattern');
-			let jCategory = {
-				pattern: pattern.textContent.toLowerCase().replace(/\*/g, '(.*)'),
-				template: Igor.getUniqueTag(category, 'template')
-			};
-			brainCategories.push(jCategory);
+			let pattern;
+			if(Igor.hasTag(category, "pattern")){
+				//Old skool matching, per spec
+				let jCategory = {
+					pattern: Igor.getUniqueTag(category, 'pattern').textContent.toLowerCase().replace(/\*/g, '(.*)'),
+					template: Igor.getUniqueTag(category, 'template')
+				};
+				brainCategories.push(jCategory);
+			}else{
+				//New scool, accepting regex, and even multiple regexes
+				tags = Igor.getTags(category, 'regex');
+				for(const tag of tags){
+					let jCategory = {
+						pattern: tag.textContent.toLowerCase(),
+						template: Igor.getUniqueTag(category, 'template')
+					};
+					brainCategories.push(jCategory);
+				}
+			}
 		}
 		Igor.dumpPatterns(brainCategories);
 		//Add the categories to the brain
 		HAL.brain.categories = HAL.brain.categories.concat(brainCategories);
 		//log(DEBUG, HAL.brain.categories);
 	},
-	
+
 	loadAIML: function loadAIML(filename){
 
 		log(DEBUG, ('Loading ' + filename).yellow);
-		
+
 		try {
 			let content = fs.readFileSync(filename).toString();
 			if(content.startsWith('<xml')){
@@ -98,6 +116,7 @@ let HAL = {
 		formalized = input.toLowerCase();
 		for(const category of HAL.brain.categories){
 			if(category.pattern.includes('*')){
+				//console.log('trying', category.pattern, 'for', input);
 				const match = input.match(new RegExp(category.pattern, 'i'));
 			  if(match){
 			  	HAL.setMatch(match);
@@ -108,36 +127,36 @@ let HAL = {
 			}
 		}
 	},
-	
+
 	setMatch: function setMatch(match){
 		log(DEBUG, match);
 		HAL.brain.match = match;
 	},
-	
+
 	getMatch: function getMatch(index){
 		return HAL.brain.match[index||1];
 	},
-	
+
 	clearMatch: function clearMatch(){
 		HAL.brain.match = undefined;
 	},
-	
+
 	hasMatch: function hasMatch(){
 		return !!HAL.brain.match;
 	},
-	
+
 	setPredicate: function setPredicate(name, value){
 		HAL.brain.predicates[name] = value;
 	},
-	
+
 	getPredicate: function getPredicate(name){
 		return HAL.brain.predicates[name];
 	},
-	
+
 	hasPredicate: function setPredicate(name){
 		return HAL.brain.predicates[name] !== undefined;
 	},
-	
+
 	runNode: function runNode(node){
 		//console.log(category);
 		let out = '';
@@ -330,8 +349,8 @@ function mainLoop(){
 
 		HAL.cue = 'Tell me more';
 
-		if(answer == "sleep"){
-			interested = false;
+		if(answer == "sleep" || answer == "quit" || answer == "die" || answer == "end"){
+			HAL.interested = false;
 		}else if(answer == '`'){
 			restart();
 		}else{
@@ -359,4 +378,5 @@ function mainLoop(){
 
 ut.setRoutines(HAL);
 HAL.init('1cat.aiml');
+HAL.loadAIML('_js.aiml');
 mainLoop();
