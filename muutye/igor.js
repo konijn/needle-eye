@@ -36,10 +36,9 @@ module.exports = {
 	},
 
 	//Log the patterns of all provided categories
-	dumpPatterns: function dumpPatterns(categories, logLevel){
-		logLevel = logLevel || SUCCESS;
+	dumpPatterns: function dumpPatterns(categories){
 		for(const category of categories){
-			log(logLevel, category.pattern);
+			console.log(category.pattern);
 		}
 	},
 
@@ -80,6 +79,31 @@ module.exports = {
   	max = Math.floor(max);
   	//The maximum is inclusive and the minimum is inclusive
   	return Math.floor(Math.random() * (max - min + 1)) + min;
+	},
+
+	addConcept: function addConcept(db, concept){
+		//Check if we know the concept already
+		const state = db.getState();
+		if(state.concepts[concept]){
+			return "I already know this concept";
+		}else{
+			state.concepts[concept] = {list:[]};
+			db.setState(state).write();
+			return `I now know the concept of ${ concept }`;
+		}
+	},
+
+	dropConcept: function dropConcept(db, concept){
+		//Check if we know the concept already
+		const state = db.getState();
+		if(state.concepts[concept]){
+			delete state.concepts[concept];
+			db.setState(state);
+			db.write();
+			return `I forgot all about the concept of ${ concept }`;
+		}else{
+			return `I don't now know the concept of ${ concept }`;
+		}
 	}
 
 };

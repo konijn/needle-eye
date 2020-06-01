@@ -23,6 +23,13 @@ const colors = require('colors');
 const xmldom = require('xmldom');
 const moment = require('moment');
 
+//NPM -> lowdb
+const low = require('lowdb');
+const adapterBuilder = require('lowdb/adapters/FileSync');
+const adapter = new adapterBuilder('db.json');
+const db = low(adapter);
+db.defaults({concepts: {}}).write();
+
 //Mine, all mine!
 require('./base.js');
 const ut = require('./ut.js');
@@ -88,7 +95,6 @@ let HAL = {
 				}
 			}
 		}
-		Igor.dumpPatterns(brainCategories);
 		//Add the categories to the brain
 		HAL.brain.categories = HAL.brain.categories.concat(brainCategories);
 		//log(DEBUG, HAL.brain.categories);
@@ -373,10 +379,11 @@ function mainLoop(){
 		}
 
 	});
-
 }
 
 ut.setRoutines(HAL);
 HAL.init('1cat.aiml');
+HAL.loadAIML('_db.aiml');
 HAL.loadAIML('_js.aiml');
+HAL.loadAIML('_concept.aiml');
 mainLoop();
