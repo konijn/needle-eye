@@ -1,0 +1,10 @@
+<aiml version="1.0">
+
+  <category>
+    <pattern>db</pattern>
+    <template><script>JSON.stringify(db.getState());</script></template>
+  </category>
+
+
+
+</aiml>

@@ -1,0 +1,41 @@
+<aiml version="1.0">
+
+
+  <category>
+    <pattern>js *</pattern>
+    <template><script>eval("<star/>") || "Done..";</script></template>
+  </category>
+
+  <category>
+    <regex>How late is it( )*(now)*( )*(\?)*</regex>
+    <regex>What time is it( )*(now)*( )*(\?)*</regex>
+    <regex>Time</regex>
+    <template>It is now <script>(new Date()).toTimeString()</script></template>
+  </category>
+
+  <category>
+    <regex>What day is it( )*(now)*( )*(\?)*</regex>
+    <regex>Date</regex>
+    <template>It is now <script>(new Date()).toDateString()</script></template>
+  </category>
+
+  <category>
+    <regex>Bye( )*(!)*</regex>
+    <regex>Sleep( )*(!)*</regex>
+    <regex>Exit( )*(!)*</regex>
+    <regex>Quit( )*(!)*</regex>
+    <template>Bye!<script>HAL.interested = false,"";</script></template>
+  </category>
+
+  <category>
+    <regex>Clear( )*(!)*</regex>
+    <regex>CLS( )*(!)*</regex>
+    <template><script>'\033c';</script></template>
+  </category>
+
+  <category>
+    <regex>Help( )*(!)*</regex>
+    <template><script>Igor.dumpPatterns(HAL.brain.categories);</script></template>
+  </category>
+
+</aiml>

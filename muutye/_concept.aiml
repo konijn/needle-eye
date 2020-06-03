@@ -1,0 +1,19 @@
+<aiml version="1.0">
+
+  <category>
+    <pattern>Add concept *</pattern>
+    <template><script>Igor.addConcept(db, "<star/>");</script></template>
+  </category>
+
+  <category>
+    <pattern>Drop concept *</pattern>
+    <template><script>Igor.dropConcept(db, "<star/>");</script></template>
+  </category>
+
+  <category>
+    <regex>Concepts</regex>
+    <regex>List Concepts</regex>
+    <template><script>Object.keys(db.getState().concepts).sort().join("\n");</script></template>
+  </category>
+
+</aiml>

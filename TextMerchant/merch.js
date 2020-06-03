@@ -5,9 +5,9 @@
   https://github.com/liabru/matter-js/issues/321
 */
 
-var game = new Game()
-  , data = game.data
-  , ui   = new UI();
+var game = new Game(),
+    data = game.data,
+    ui   = new UI();
 
 function Game() {
 
@@ -25,7 +25,7 @@ Game.prototype.onClick = function onClick(body){
     UI.createLog(ui);
     UI.remove(body);
   }
-}
+};
 
 function update() {
   //console.log('Tick');
@@ -72,4 +72,3 @@ function step(timestamp) {
   let progress = timestamp - UI.last;
 
 }
-
