@@ -1,3 +1,5 @@
+/* jshint esversion: 6 */
+
 //Node.js
 const fs = require('fs');
 //Mine, all mine!
