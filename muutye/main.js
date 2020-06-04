@@ -385,5 +385,6 @@ ut.setRoutines(HAL);
 HAL.init('1cat.aiml');
 HAL.loadAIML('_db.aiml');
 HAL.loadAIML('_js.aiml');
+HAL.loadAIML('_plurals.aiml');
 HAL.loadAIML('_concept.aiml');
 mainLoop();
