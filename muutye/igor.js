@@ -104,6 +104,11 @@ module.exports = {
 		}else{
 			return `I don't now know the concept of ${ concept }`;
 		}
+	},
+	
+	considerConcept: function considerConcept(concept){
+	  
+	  return `I am now considering ${concept}`;
 	}
 
 };

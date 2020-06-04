@@ -10,7 +10,7 @@
 //Exceptions, because I cant
 //regex tag can replace the pattern tag, system will match as regex
 
-/*jshint esversion: 6 */
+/*jshint esversion: 6, evil: true */
 
 //Node
 const fs = require('fs');
