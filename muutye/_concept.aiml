@@ -13,7 +13,13 @@
   <category>
     <regex>Concepts</regex>
     <regex>List Concepts</regex>
-    <template><script>Object.keys(db.getState().concepts).sort().join("\n");</script></template>
+    <template><script>Object.keys(db.getState().concepts).sort().join("\n") || "I don't know any concepts";</script></template>
   </category>
+
+  <category>
+    <pattern>Consider *</pattern>
+    <template><script>Igor.considerConcept("<star/>");</script></template>
+  </category>
+
 
 </aiml>
