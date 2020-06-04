@@ -1,10 +1,14 @@
 <aiml version="1.0">
-
+<!-- 1 parameter: `<star/>` -->
+<!-- 2 parameters: `<star index="1"/>`, `<star index="2"/>` -->
   <category>
     <pattern>db</pattern>
     <template><script>JSON.stringify(db.getState());</script></template>
   </category>
 
-
+  <category>
+    <pattern>create db *</pattern>
+    <template><script>Igor.createDatabase(`<star/>`)</script></template>
+  </category>
 
 </aiml>
