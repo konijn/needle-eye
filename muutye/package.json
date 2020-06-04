@@ -1,11 +1,13 @@
 {
   "name": "Muutye",
   "version": "0.0.1",
+  "description": "Your patient AIML friend",
   "private": "true",
   "license": "GPL-3.0",
   "scripts": {
     "start": "node main.js"
   },
+  "main": "main.js",
   "dependencies": {
     "colors": "^1.4.0",
     "lowdb": "^1.0.0",
@@ -15,5 +17,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/konijn/needle-eye/"
+  },
+  "bin": {
+    "muutye": "main.js"
   }
 }
