@@ -94,7 +94,7 @@ module.exports = {
 	},
 
 	dropConcept: function dropConcept(db, concept){
-		//Check if we know the concept already
+		//Check if we know the concept already in the main database
 		const state = db.getState();
 		if(state.concepts[concept]){
 			delete state.concepts[concept];
@@ -102,8 +102,17 @@ module.exports = {
 			db.write();
 			return `I forgot all about the concept of ${ concept }`;
 		}else{
-			return `I don't now know the concept of ${ concept }`;
+			return `I don't know the concept of ${ concept }`;
 		}
+	},
+
+	createDatabase: function createDatabase(name){
+		const low = require('lowdb');
+		const adapterBuilder = require('lowdb/adapters/FileSync');
+		const adapter = new adapterBuilder(`db${name}.json`);
+		const db = low(adapter);
+		db.defaults({name, createdOn }).write();
 	}
+
 
 };
