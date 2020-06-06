@@ -1,10 +1,24 @@
 <aiml version="1.0">
 
   <category>
-    <pattern>add plural *</pattern>
-    <template><script>Igor.addPlural(db, `<star index="1"/>`, `<star index="2"/>`);</script></template>
+    <pattern>add plural * *</pattern>
+    <template><script>Igor.addPlural(`<star index="1"/>`, `<star index="2"/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>the plural of * is *</pattern>
+    <template><script>Igor.addPlural(`<star index="1"/>`, `<star index="2"/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>what is the plural of *</pattern>
+    <template>The plural of <star index="1"/> is <plural><star index="1"/></plural>.</template>
+  </category>
+
+  <category>
+    <pattern>what is the singular of *</pattern>
+    <template>The singular of <star index="1"/> is <singular><star index="1"/></singular>.</template>
   </category>
 
 
-
-</aiml>
+</aiml>>

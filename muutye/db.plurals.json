@@ -1,0 +1,10 @@
+{
+  "name": "plurals",
+  "createdOn": "2020-06-04T15:29:50.080Z",
+  "plurals": {
+    "calf": "calves"
+  },
+  "singulars": {
+    "calves": "calf"
+  }
+}
