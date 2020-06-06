@@ -117,7 +117,9 @@ module.exports = {
     runTest('test star having multiple stars in a pattern makes me extremely happy', 'Multiple stars matched: having, stars in a pattern, extremely happy');
 
     runTest('test system', 'The system says Nice Try!');
-
+    
+    runTest('test plurals 1', 'The plural of house is houses, of fish is fishes');
+    runTest('test plurals 2', 'The plural of memory is memories, of calf is calves');
 
 
     //Colorize the state of affairs

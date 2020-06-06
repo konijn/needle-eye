@@ -76,7 +76,7 @@ let HAL = {
 			log(WARNING,"aiml files should have a top level aiml member");
 		}
 		if(aimlVersion != HAL.supportedAIMLVersion){
-			log(WARNING,`${HAL.brain.predicates._id} understands version ${supportedAIMLVersion} not ${aiml.version}`);
+			log(WARNING,`${HAL.brain.predicates._id} understands version ${HAL.supportedAIMLVersion} not ${aiml.version}`);
 		}
 		//Get categories
 		let categories = aiml.getElementsByTagName('category');

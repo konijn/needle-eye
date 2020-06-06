@@ -199,4 +199,16 @@
 		<template>I have already answered this question</template>
 	</category>
 
+	<!-- plurals -->
+	<category>
+		<pattern>TEST PLURALS 1</pattern>
+		<template>The plural of house is <plural>house</plural>, of fish is <plural>fish</plural></template>
+	</category>
+
+	<category>
+		<pattern>TEST PLURALS 2</pattern>
+		<template>The plural of memory is <plural>memory</plural>, of calf is <plural>calf</plural></template>
+	</category>
+
+
 </aiml>

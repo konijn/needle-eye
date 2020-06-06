@@ -1,4 +1,14 @@
 /*jshint esversion: 6 */
+
+"use strict";
+
+const DEBUG = 0;
+const WARNING = 4;
+const SUCCESS = 6;
+const ERROR = 8;
+const CATASTROPHE = 16;
+const CRITICAL = 16;
+
 //Node
 const fs = require('fs');
 //Mine
@@ -113,12 +123,12 @@ module.exports = {
 
 	createDatabase: function createDatabase(name){
 		const low = require('lowdb');
-		const adapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new adapterBuilder(`db.${name}.json`);
+		const AdapterBuilder = require('lowdb/adapters/FileSync');
+		const adapter = new AdapterBuilder(`db.${name}.json`);
 		const db = low(adapter);
 		const createdOn = (new Date()).toISOString();
 		db.defaults({name, createdOn }).write();
-		dbCreatedOn = db.get('createdOn').value();
+		const dbCreatedOn = db.get('createdOn').value();
 		if(createdOn==dbCreatedOn){
 			return `Database created for ${name} as db.${name}.json`;
 		}else{
@@ -142,7 +152,6 @@ module.exports = {
 		}catch(e){
 			console.log(e.toString().split("\n").shift().yellow);
 			//console.log(JSON.stringify(e));
-			//console
 			return 'I am not sure this went according to plan';
 		}
 		return "Database dropped";
@@ -150,18 +159,41 @@ module.exports = {
 	
 	isEssentialDatabase: function isEssentialDatabase(name){
 		//TODO Flesh this out, for now, make sure to never drop the main database
-		return !name;
+		//Name is the database, not the file name, so the name of db.plurals.json is plurals
+		return !name || name == 'plurals';
 
+	},
+	
+	getDatabase: function getDatabase(name){
+		const low = require('lowdb');
+		const AdapterBuilder = require('lowdb/adapters/FileSync');
+		//Being very flexible here, possibly inviting sloppyness
+		const fileName = name.endsWith('.json') ? name : `db.${name}.json`;
+		const adapter = new AdapterBuilder(fileName);
+		return low(adapter);
+	},
+	
+	getDatabaseState: function getDatabaseState(name){
+		const db = this.getDatabase(name);
+		let state = db.getState();
+		//For good measure, and to make setDatabaseState happy
+		state.name = name;
+		return state;
+	},
+	
+	writeDatabaseState: function setDatabaseState(state){
+		const db = this.getDatabase(state.name);
+		db.setState(state).write();
 	},
 	
 	addPlural: function addPlural(singular, plural){
 		const low = require('lowdb');
-		const adapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new adapterBuilder(`db.plurals.json`);
+		const AdapterBuilder = require('lowdb/adapters/FileSync');
+		const adapter = new AdapterBuilder(`db.plurals.json`);
 		const db = low(adapter);
 		let state = db.getState();
-		console.log(singular, plural);
-		console.log('state', state);
+		//console.log(singular, plural);
+		//console.log('state', state);
 		state.plurals = state.plurals || {};
 		state.singulars = state.singulars || {};
 		const currentPlural = state.plurals[singular];
@@ -176,12 +208,8 @@ module.exports = {
 	},
 	
 	plural: function plural(word){
-
-		const low = require('lowdb');
-		const adapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new adapterBuilder(`db.plurals.json`);
-		const db = low(adapter);
-		let state = db.getState();
+		
+		const state = this.getDatabaseState('plurals');
 
 		if(state.plurals[word]){
 			return state.plurals[word];
@@ -202,11 +230,7 @@ module.exports = {
 	
 	singular: function singular(word){
 
-		const low = require('lowdb');
-		const adapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new adapterBuilder(`db.plurals.json`);
-		const db = low(adapter);
-		let state = db.getState();
+		const state = this.getDatabaseState('plurals');
 
 		if(state.singulars[word]){
 			return state.singulars[word];
@@ -227,6 +251,26 @@ module.exports = {
 		}
 		
 		return word;
+	},
+	
+	addSilly: function addSilly(challenge, response){
+		
+		console.log(`${challenge} -> ${response}`);
+		const state = this.getDatabaseState('silly');
+		state.sillies = state.sillies || {};
+		state.sillies[challenge] = response;
+		//console.log("Igor", this);
+		console.log(state);
+		this.writeDatabaseState(state);
+		
+	}
+	
+};tate.sillies || {};
+		state.sillies[challenge] = response;
+		//console.log("Igor", this);
+		console.log(state);
+		this.writeDatabaseState(state);
+		
 	}
 	
 };

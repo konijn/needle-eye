@@ -1,8 +1,21 @@
 <aiml version="1.0">
 
+<!-- Hard coded responses are considered silly, to me, I imagine they can be useful to someone  -->
+
   <category>
     <pattern>lol</pattern>
     <template>Wut!!</template>
   </category>
+
+  <category>
+    <pattern>When I say * you say *</pattern>
+    <template><script>Igor.addSilly(`<star index="1"/>`, `<star index="2"/>`);</script></template>>
+  </category>
+
+  <category>
+    <pattern>reload sillies</pattern>
+    <template><script>Igor.loadSillies(), "I reloaded the sillies.";</script></template>>
+  </category>
+
 
 </aiml>>

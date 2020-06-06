@@ -1,5 +1,14 @@
 /* jshint esversion: 6 */
 
+"use strict";
+
+const DEBUG = 0;
+const WARNING = 4;
+const SUCCESS = 6;
+const ERROR = 8;
+const CATASTROPHE = 16;
+const CRITICAL = 16;
+
 //Node.js
 const fs = require('fs');
 //Mine, all mine!
@@ -41,8 +50,10 @@ module.exports = {
 				log(CATASTROPHE, oops);
 			}
 		}
-
-		({map, reString} = substitutions[set]);
+		
+		const substitution = substitutions[set];
+		const map = substitution.map;
+		const reString = substitution.reString;
 
 		function determineReplacement(needle){
 			const replacement = map[needle.toLowerCase()];
