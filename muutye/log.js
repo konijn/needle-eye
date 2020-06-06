@@ -2,12 +2,14 @@
 
 //const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
-DEBUG = 0;
-WARNING = 4;
-SUCCESS = 6;
-ERROR = 8;
-CATASTROPHE = 16;
-CRITICAL = 16;
+"use strict";
+
+const DEBUG = 0;
+const WARNING = 4;
+const SUCCESS = 6;
+const ERROR = 8;
+const CATASTROPHE = 16;
+const CRITICAL = 16;
 let logLevel = ERROR;
 
 module.exports = {
@@ -23,7 +25,7 @@ module.exports = {
 			if(level==CATASTROPHE){
 				console.log('> Muutye screams in agony..'.red);
 				console.log(new Error().stack);
-				io.close();
+				//io.close();
 				process.exit();
 			}
 		} else{
@@ -41,3 +43,4 @@ module.exports = {
 	}
 
 };
+;
