@@ -18,7 +18,7 @@
 
   <category>
     <pattern>Consider *</pattern>
-    <template><script>Igor.considerConcept("<star/>");</script></template>
+    <template>Focusing now on <script>`${HAL.brain.predicates.considering="<star/>"}`</script>.</template>
   </category>
 
 

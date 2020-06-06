@@ -11,3 +11,10 @@ String.prototype.textNodeTrim = function textNodeTrim(){
 
 	return s;
 };
+
+String.prototype.word = function stringWord(){
+	///\s/ => any white space
+	///^[a-z0-9]+$/i => only alphanumeric
+
+		return this.split(/\s/).shift().replace(/[^a-z0-9]/gi,'');
+};

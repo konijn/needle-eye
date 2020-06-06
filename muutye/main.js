@@ -12,11 +12,20 @@
 
 /*jshint esversion: 6, evil: true */
 
+'use strict';
+
+const DEBUG = 0;
+const WARNING = 4;
+const SUCCESS = 6;
+const ERROR = 8;
+const CATASTROPHE = 16;
+const CRITICAL = 16;
+
 //Node
 const fs = require('fs');
 
 //Evil global :/
-io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
+const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
 //NPM
 const colors = require('colors');
@@ -25,8 +34,8 @@ const moment = require('moment');
 
 //NPM -> lowdb
 const low = require('lowdb');
-const adapterBuilder = require('lowdb/adapters/FileSync');
-const adapter = new adapterBuilder('db.json');
+const AdapterBuilder = require('lowdb/adapters/FileSync');
+const adapter = new AdapterBuilder('db.json');
 const db = low(adapter);
 db.defaults({concepts: {}}).write();
 
@@ -41,7 +50,7 @@ const Igor = require('./igor.js');
 const botName = 'Muutye';
 
 let HAL = {
-	cue: `${botName} awakens..`, //Cue because prompt is already taken
+	cue: `${botName} awakens..`, //Cue because prompt is already taken,'\033c' will not show in green
 	interested: true, //As long as we are interested, we keep going
 	supportedAIMLVersion: '1.0', //What AIML version do we support?
 	defaultResponse: 'Got ya', //What to respond if we don't get it?
@@ -85,7 +94,7 @@ let HAL = {
 				brainCategories.push(jCategory);
 			}else{
 				//New scool, accepting regex, and even multiple regexes
-				tags = Igor.getTags(category, 'regex');
+				let tags = Igor.getTags(category, 'regex');
 				for(const tag of tags){
 					let jCategory = {
 						pattern: tag.textContent.toLowerCase(),
@@ -119,7 +128,7 @@ let HAL = {
 	},
 
 	findCategory: function findCategory(input){
-		formalized = input.toLowerCase();
+		const formalized = input.toLowerCase();
 		for(const category of HAL.brain.categories){
 			if(category.pattern.includes('*')){
 				//console.log('trying', category.pattern, 'for', input);
@@ -324,6 +333,10 @@ let HAL = {
 				}catch(exception){
 					log(ERROR, `Something went horribly wrong: ${exception}`);
 				}
+			}else if(child.nodeName == 'plural'){
+				out += Igor.plural(runNode(child));
+			}else if(child.nodeName == 'singular'){
+				out += Igor.singular(runNode(child));
 			}
 		}
 		stack.delete(node);
@@ -338,14 +351,14 @@ let HAL = {
 function restart(){
 	console.log("Attempting to restart " + process.pid);
 	setTimeout(function () {
-	    process.on("exit", function () {
-	        require("child_process").spawn(process.argv.shift(), process.argv, {
-	            cwd: process.cwd(),
-	            detached : true,
-	            stdio: "inherit"
-	        });
-	    });
-	    process.exit();
+		process.on("exit", function () {
+			require("child_process").spawn(process.argv.shift(), process.argv, {
+				cwd: process.cwd(),
+				detached : true,
+				stdio: "inherit"
+			});
+		});
+		process.exit();
 	}, 0);
 }
 
@@ -385,6 +398,8 @@ ut.setRoutines(HAL);
 HAL.init('1cat.aiml');
 HAL.loadAIML('_db.aiml');
 HAL.loadAIML('_js.aiml');
+HAL.loadAIML('_silly.aiml');
+HAL.loadAIML('_system.aiml');
 HAL.loadAIML('_plurals.aiml');
 HAL.loadAIML('_concept.aiml');
 mainLoop();

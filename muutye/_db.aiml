@@ -11,4 +11,16 @@
     <template><script>Igor.createDatabase(`<star/>`)</script></template>
   </category>
 
+  <category>
+    <regex>list db</regex>
+    <regex>db list</regex>
+    <regex>dbs</regex>
+    <template><script>Igor.listDatabases();</script></template>
+  </category>
+
+  <category>
+    <pattern>drop db *</pattern>
+    <template><script>Igor.dropDatabase(`<star/>`)</script></template>
+  </category>
+
 </aiml>

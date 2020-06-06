@@ -30,7 +30,7 @@
   <category>
     <regex>Clear( )*(!)*</regex>
     <regex>CLS( )*(!)*</regex>
-    <template><script>'\033c';</script></template>
+    <template><script>'\u001B[2J\u001B[0;0f';</script></template>
   </category>
 
   <category>

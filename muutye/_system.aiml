@@ -1,0 +1,10 @@
+<aiml version="1.0">
+
+  <category>
+    <pattern>ls</pattern>
+    <template><system>ls</system></template>
+  </category>
+
+
+
+</aiml>

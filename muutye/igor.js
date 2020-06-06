@@ -75,10 +75,10 @@ module.exports = {
 	},
 
 	getRandomIntInclusive: function getRandomIntInclusive(min, max) {
-  	min = Math.ceil(min);
-  	max = Math.floor(max);
-  	//The maximum is inclusive and the minimum is inclusive
-  	return Math.floor(Math.random() * (max - min + 1)) + min;
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		//The maximum is inclusive and the minimum is inclusive
+		return Math.floor(Math.random() * (max - min + 1)) + min;
 	},
 
 	addConcept: function addConcept(db, concept){
@@ -105,14 +105,128 @@ module.exports = {
 			return `I don't know the concept of ${ concept }`;
 		}
 	},
+	
+	
+	considerConcept: function considerConcept(concept){
+		
+	},
 
 	createDatabase: function createDatabase(name){
 		const low = require('lowdb');
 		const adapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new adapterBuilder(`db${name}.json`);
+		const adapter = new adapterBuilder(`db.${name}.json`);
 		const db = low(adapter);
+		const createdOn = (new Date()).toISOString();
 		db.defaults({name, createdOn }).write();
+		dbCreatedOn = db.get('createdOn').value();
+		if(createdOn==dbCreatedOn){
+			return `Database created for ${name} as db.${name}.json`;
+		}else{
+			return `Database was created as db.${name}.json on ${dbCreatedOn}`;
+		}
+	},
+
+	listDatabases: function listDatabases(){
+		const stats = fs.readdirSync("./").filter(f=>f.endsWith('.json')).filter(f=>f.startsWith('db.'));
+		stats.forEach(f=>console.log(f));
+		return `Total count: ${stats.length}`;
+	},
+
+	dropDatabase: function dropDatabase(name){
+		if(this.isEssentialDatabase(name)){
+			return 'I cannot drop this essential database';
+		}
+		try{
+			const file = `db.${name}.json`;
+			fs.unlinkSync(file);
+		}catch(e){
+			console.log(e.toString().split("\n").shift().yellow);
+			//console.log(JSON.stringify(e));
+			//console
+			return 'I am not sure this went according to plan';
+		}
+		return "Database dropped";
+	},
+	
+	isEssentialDatabase: function isEssentialDatabase(name){
+		//TODO Flesh this out, for now, make sure to never drop the main database
+		return !name;
+
+	},
+	
+	addPlural: function addPlural(singular, plural){
+		const low = require('lowdb');
+		const adapterBuilder = require('lowdb/adapters/FileSync');
+		const adapter = new adapterBuilder(`db.plurals.json`);
+		const db = low(adapter);
+		let state = db.getState();
+		console.log(singular, plural);
+		console.log('state', state);
+		state.plurals = state.plurals || {};
+		state.singulars = state.singulars || {};
+		const currentPlural = state.plurals[singular];
+		if(currentPlural){
+			delete state.plurals[singular];
+			delete state.singulars[plural];
+		}
+		state.plurals[singular] = plural;
+		state.singulars[plural] = singular;
+
+		db.setState(state).write();
+	},
+	
+	plural: function plural(word){
+
+		const low = require('lowdb');
+		const adapterBuilder = require('lowdb/adapters/FileSync');
+		const adapter = new adapterBuilder(`db.plurals.json`);
+		const db = low(adapter);
+		let state = db.getState();
+
+		if(state.plurals[word]){
+			return state.plurals[word];
+		}
+
+		//Things are slightly complicated when the word already ends with an "s," or with a "ch," "sh," "x," or "z."
+		//In this case, it's often correct to add "es" instead.
+		if(word.endsWith('s') || word.endsWith('ch') || word.endsWith('sh') || word.endsWith('x') || word.endsWith('z')){
+			return word + 'es';
+		}
+		
+		if(word.endsWith('y')){
+			return word.replace(/y$/,"ies");
+		}
+		
+		return word + 's';
+	},
+	
+	singular: function singular(word){
+
+		const low = require('lowdb');
+		const adapterBuilder = require('lowdb/adapters/FileSync');
+		const adapter = new adapterBuilder(`db.plurals.json`);
+		const db = low(adapter);
+		let state = db.getState();
+
+		if(state.singulars[word]){
+			return state.singulars[word];
+		}
+
+		//Things are slightly complicated when the word already ends with an "s," or with a "ch," "sh," "x," or "z."
+		//In this case, it's often correct to add "es" instead.
+		if(word.endsWith('ses') || word.endsWith('xes') || word.endsWith('zes') || word.endsWith('ches') || word.endsWith('shes')){
+			return word.slice(0,-2);
+		}
+		
+		if(word.endsWith('ies')){
+			return word.replace(/ies$/,"y");
+		}
+		
+		if(word.endsWith('s')){
+			return word.slice(0,-1);
+		}
+		
+		return word;
 	}
-
-
+	
 };
