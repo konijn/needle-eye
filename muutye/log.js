@@ -10,7 +10,7 @@ const SUCCESS = 6;
 const ERROR = 8;
 const CATASTROPHE = 16;
 const CRITICAL = 16;
-let logLevel = ERROR;
+let logLevel = ERROR; //Default is ERROR
 
 module.exports = {
 
