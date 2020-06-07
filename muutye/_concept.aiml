@@ -18,8 +18,24 @@
 
   <category>
     <pattern>Consider *</pattern>
-    <template>Focusing now on <script>`${HAL.brain.predicates.considering="<star/>"}`</script>.</template>
+    <template><script>Igor.considerConcept(HAL, `<star/>`);</script></template>
   </category>
 
+  <category>
+    <regex>What was I considering</regex>
+    <regex>What am I considering</regex>
+    <template>You are considering<script>HAL.brain.predicates.considering || 'nothing'</script></template>
+  </category>
+
+  <category>
+    <pattern>Add *</pattern>
+    <!-- TODO For now, only add to concepts, but later this should be more generic -->
+    <template><script>Igor.addToConcept(HAL, `<star/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>list *</pattern>
+    <template><script>Igor.list(HAL, `<star/>`);</script></template>
+  </category>
 
 </aiml>
