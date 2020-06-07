@@ -1,0 +1,2 @@
+git update-index --skip-worktree db.plurals.json
+git update-index --skip-worktree db.silly.json
