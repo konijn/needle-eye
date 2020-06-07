@@ -9,7 +9,7 @@
 
   <category>
     <pattern>When I say * you say *</pattern>
-    <template><script>Igor.addSilly(`<star index="1"/>`, `<star index="2"/>`);</script></template>>
+    <template><script>Igor.addSilly(`<star index="1"/>`, `<star index="2"/>`),Igor.loadSillies(HAL), "Sure!";</script></template>>
   </category>
 
   <category>
@@ -17,5 +17,4 @@
     <template><script>Igor.loadSillies(), "I reloaded the sillies.";</script></template>>
   </category>
 
-
-</aiml>>
+</aiml>
