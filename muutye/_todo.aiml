@@ -1,0 +1,46 @@
+<aiml version="1.0">
+<!-- 1 parameter: `<star/>` -->
+<!-- 2 parameters: `<star index="1"/>`, `<star index="2"/>` -->
+
+  <category>
+    <pattern>add todo *</pattern>
+    <template><script>Igor.addTodo(`<star/>`)</script></template>
+  </category>
+
+  <category>
+    <pattern>drop todo *</pattern>
+    <template><script>Igor.dropTodo(`<star/>`)</script></template>
+  </category>
+
+  <category>
+    <pattern>list todo *</pattern>
+    <template><script>Igor.listTodo(`<star/>`);</script></template>
+  </category>
+
+
+</aiml>ipt></template>
+  </category>
+
+  <category>
+    <pattern>drop db *</pattern>
+    <template><script>Igor.dropDatabase(`<star/>`)</script></template>
+  </category>
+
+  <category>
+    <pattern>cat db *</pattern>
+    <template><script>JSON.stringify(Igor.getDatabaseState(`<star/>`));</script></template>
+  </category>
+
+  <category>
+    <pattern>db * is not essential</pattern>
+    <template><script>Igor.setDatabaseAsNotEssential(db, `<star/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>db * is essential</pattern>
+    <template><script>Igor.setDatabaseAsEssential(db, `<star/>`),"<star/> is now essential."</script></template>
+  </category>
+
+</aiml>>ry>
+
+</aiml>l>
