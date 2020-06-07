@@ -1,4 +1,4 @@
-/* jshint esversion: 6 */
+/* jshint esversion: 6, node: true */
 
 "use strict";
 
@@ -27,9 +27,10 @@ module.exports = {
 				//Regular Expression String
 				let reString = '';
 				let map = {};
-
-				for(const counter in list){
-					let pair = list[counter];
+				//Because I enhanced the prototype, I cant very well use `in`
+				//So I do my own tracking
+				let counter = 0;
+				for(const pair of list){
 					//Trim first, to make the rest cleaner
 					pair[0] = pair[0].trim().toLowerCase();
 					pair[1] = pair[1].trim().toLowerCase();
@@ -37,7 +38,7 @@ module.exports = {
 					map[pair[0]] = pair[1];
 					map[pair[1]] = pair[0];
 					//Overwrite the pair with the regex string equivalent
-					list[counter] = `\\b${pair[0]}\\b|\\b${pair[1]}\\b`;
+					list[counter++] = `\\b${pair[0]}\\b|\\b${pair[1]}\\b`;
 				}
 
 				//Finalize the regex string
@@ -50,7 +51,7 @@ module.exports = {
 				log(CATASTROPHE, oops);
 			}
 		}
-		
+
 		const substitution = substitutions[set];
 		const map = substitution.map;
 		const reString = substitution.reString;
