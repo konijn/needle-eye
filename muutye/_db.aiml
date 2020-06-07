@@ -28,5 +28,14 @@
     <template><script>JSON.stringify(Igor.getDatabaseState(`<star/>`));</script></template>
   </category>
 
+  <category>
+    <pattern>db * is not essential</pattern>
+    <template><script>Igor.setDatabaseAsNotEssential(db, `<star/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>db * is essential</pattern>
+    <template><script>Igor.setDatabaseAsEssential(db, `<star/>`),"<star/> is now essential."</script></template>
+  </category>
 
 </aiml>
