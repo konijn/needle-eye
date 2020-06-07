@@ -1,4 +1,4 @@
-/*jshint esversion: 6 */
+/*jshint esversion: 6, node: true */
 
 "use strict";
 
@@ -115,17 +115,34 @@ module.exports = {
 			return `I don't know the concept of ${ concept }`;
 		}
 	},
-	
-	
-	considerConcept: function considerConcept(concept){
-		
+
+	addToConcept: function addToConcept(HAL, s){
+		const state = HAL.db.getState();
+		const concept = this.singular(HAL.brain.predicates.considering);
+     //console.log('Hello World!', concept, s);
+		if(!concept){
+			return 'I need to consider a concept first'.yellow;
+		}
+		if(!state.concepts[concept]){
+			return `I don't know about the concept of ${this.plural(concept)}`.yellow;
+		}
+		if(!(state.concepts[concept].list instanceof Array)){
+			return `I don't think ${this.plural(concept)} is a proper concept`.yellow;
+		}
+		//console.log('we made it');
+		state.concepts[concept].list.push(s);
+		HAL.db.setState(state).write();
+	},
+
+	considerConcept: function considerConcept(HAL, concept){
+		//Okay
+		concept = concept.endsWith('s')?concept:this.plural(concept);
+		HAL.brain.predicates.considering = concept;
+		return `Focusing now on ${concept}`;
 	},
 
 	createDatabase: function createDatabase(name){
-		const low = require('lowdb');
-		const AdapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new AdapterBuilder(`db.${name}.json`);
-		const db = low(adapter);
+		const db = this.getDatabase(name);
 		const createdOn = (new Date()).toISOString();
 		db.defaults({name, createdOn }).write();
 		const dbCreatedOn = db.get('createdOn').value();
@@ -156,14 +173,26 @@ module.exports = {
 		}
 		return "Database dropped";
 	},
-	
-	isEssentialDatabase: function isEssentialDatabase(name){
-		//TODO Flesh this out, for now, make sure to never drop the main database
-		//Name is the database, not the file name, so the name of db.plurals.json is plurals
-		return !name || name == 'plurals';
 
+	isEssentialDatabase: function isEssentialDatabase(name){
+		//Name is the database, not the file name, so the name of db.plurals.json is plurals
+		const essentials = this.getDatabaseState("db.json").essentials;
+		console.log(essentials);
+		return essentials.has(name);
 	},
-	
+
+	setDatabaseAsNotEssential: function setNotEssential(db, name){
+	  const state = db.getState();
+	  state.essentials = state.essentials.drop(name);
+	  db.setState(state).write();
+	},
+
+	setDatabaseAsEssential: function setEssential(db, name){
+	  const state = db.getState();
+	  state.essentials.push(name);
+	  db.setState(state).write();
+	},
+
 	getDatabase: function getDatabase(name){
 		const low = require('lowdb');
 		const AdapterBuilder = require('lowdb/adapters/FileSync');
@@ -172,20 +201,20 @@ module.exports = {
 		const adapter = new AdapterBuilder(fileName);
 		return low(adapter);
 	},
-	
+
 	getDatabaseState: function getDatabaseState(name){
 		const db = this.getDatabase(name);
 		let state = db.getState();
-		//For good measure, and to make setDatabaseState happy
+		//For good measure, and to make writeDatabaseState happy
 		state.name = name;
 		return state;
 	},
-	
-	writeDatabaseState: function setDatabaseState(state){
+
+	writeDatabaseState: function writeDatabaseState(state){
 		const db = this.getDatabase(state.name);
 		db.setState(state).write();
 	},
-	
+
 	addPlural: function addPlural(singular, plural){
 		const low = require('lowdb');
 		const AdapterBuilder = require('lowdb/adapters/FileSync');
@@ -206,9 +235,9 @@ module.exports = {
 
 		db.setState(state).write();
 	},
-	
+
 	plural: function plural(word){
-		
+
 		const state = this.getDatabaseState('plurals');
 
 		if(state.plurals[word]){
@@ -220,14 +249,14 @@ module.exports = {
 		if(word.endsWith('s') || word.endsWith('ch') || word.endsWith('sh') || word.endsWith('x') || word.endsWith('z')){
 			return word + 'es';
 		}
-		
+
 		if(word.endsWith('y')){
 			return word.replace(/y$/,"ies");
 		}
-		
+
 		return word + 's';
 	},
-	
+
 	singular: function singular(word){
 
 		const state = this.getDatabaseState('plurals');
@@ -241,36 +270,55 @@ module.exports = {
 		if(word.endsWith('ses') || word.endsWith('xes') || word.endsWith('zes') || word.endsWith('ches') || word.endsWith('shes')){
 			return word.slice(0,-2);
 		}
-		
+
 		if(word.endsWith('ies')){
 			return word.replace(/ies$/,"y");
 		}
-		
+
 		if(word.endsWith('s')){
 			return word.slice(0,-1);
 		}
-		
+
 		return word;
 	},
-	
+
 	addSilly: function addSilly(challenge, response){
-		
-		console.log(`${challenge} -> ${response}`);
+
 		const state = this.getDatabaseState('silly');
 		state.sillies = state.sillies || {};
 		state.sillies[challenge] = response;
-		//console.log("Igor", this);
+		this.writeDatabaseState(state);
+	},
+
+	loadSillies: function loadSillies(HAL){
+		const state = this.getDatabaseState('silly');
+		for(const silly of Object.keys(state.sillies)){
+			//Building a parsed XML node by hand..
+			//Madness, I tell you, madness!!!!
+			HAL.brain.categories.push({ pattern:silly.toLowerCase(),
+			                            template: {
+			                              childNodes: [
+			                                { nodeName: '#text',
+			                                  nodeValue: state.sillies[silly],
+			                                  parentNode: {nodeName:'template'}
+			                                }]}});
+		}
+	},
+
+	addTodo: function addTodo(task){
+		const state = this.getDatabaseState('todo');
+		state.list = state.list || [];
+		state.list.push({task, createdOn:(new Date()).toISOString()});
 		console.log(state);
 		this.writeDatabaseState(state);
-		
-	}
-	
-};tate.sillies || {};
-		state.sillies[challenge] = response;
-		//console.log("Igor", this);
-		console.log(state);
-		this.writeDatabaseState(state);
-		
-	}
-	
+	},
+
+	dropTodo: function dropTodo(task){
+		const state = this.getDatabaseState('todo');
+	},
+
+	listTodo: function listTodo(){
+		const state = this.getDatabaseState('todo');
+	},
+
 };
