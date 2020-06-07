@@ -10,7 +10,7 @@
 //Exceptions, because I cant
 //regex tag can replace the pattern tag, system will match as regex
 
-/*jshint esversion: 6, evil: true */
+/*jshint esversion: 6, evil: true, node: true */
 
 'use strict';
 
@@ -31,13 +31,6 @@ const io = require('readline').createInterface({ input: process.stdin, output: p
 const colors = require('colors');
 const xmldom = require('xmldom');
 const moment = require('moment');
-
-//NPM -> lowdb
-const low = require('lowdb');
-const AdapterBuilder = require('lowdb/adapters/FileSync');
-const adapter = new AdapterBuilder('db.json');
-const db = low(adapter);
-db.defaults({concepts: {}}).write();
 
 //Mine, all mine!
 require('./base.js');
@@ -106,7 +99,7 @@ let HAL = {
 		}
 		//Add the categories to the brain
 		HAL.brain.categories = HAL.brain.categories.concat(brainCategories);
-		//log(DEBUG, HAL.brain.categories);
+		log(DEBUG, HAL.brain.categories);
 	},
 
 	loadAIML: function loadAIML(filename){
@@ -130,14 +123,15 @@ let HAL = {
 	findCategory: function findCategory(input){
 		const formalized = input.toLowerCase();
 		for(const category of HAL.brain.categories){
+			log(DEBUG, `trying ${category.pattern} for ${input} aka ${formalized}`);
 			if(category.pattern.includes('*')){
-				//console.log('trying', category.pattern, 'for', input);
 				const match = input.match(new RegExp(category.pattern, 'i'));
-			  if(match){
-			  	HAL.setMatch(match);
-			  	return category;
-			  }
+				if(match){
+					HAL.setMatch(match);
+					return category;
+				}
 			}else if(category.pattern == formalized){
+				log(DEBUG, `Found ${formalized}, returning ${category}`);
 				return category;
 			}
 		}
@@ -173,7 +167,7 @@ let HAL = {
 	},
 
 	runNode: function runNode(node){
-		//console.log(category);
+		//console.log(DEBUG, JSON.stringify(node));
 		let out = '';
 		let defaultResponse = '';
 		let stack = HAL.brain.stack;
@@ -187,7 +181,8 @@ let HAL = {
 		for(let counter = 0 ; counter < node.childNodes.length; counter++){
 			const child = node.childNodes[counter];
 			const parent = child.parentNode;
-			log(DEBUG, `'Child ${counter}: ${child.nodeName.grey}, parent: ${parent.nodeName.grey}`);
+			log(DEBUG, `Child ${child}, parent: ${parent}`);
+			log(DEBUG, `Child ${counter}: ${child.nodeName.grey}, parent: ${parent.nodeName.grey}`);
 			//Text node
 			if(child.nodeName == '#text'){
 				out += child.nodeValue.textNodeTrim();
@@ -214,12 +209,12 @@ let HAL = {
 			}else if(child.nodeName == 'lowercase'){
 				out += runNode(child).toLowerCase();
 			}else if(child.nodeName == 'sr'){
-				const category = routines.findCategory(HAL.getMatch());
+				const category = HAL.findCategory(HAL.getMatch());
 				//log(DEBUG, category.template);
 				out += runNode(category.template);
 			}else if(child.nodeName == 'srai'){
 				const target = runNode(child);
-				const category = routines.findCategory(target);
+				const category = HAL.findCategory(target);
 				if(category && category.template){
 					out += runNode(category.template);
 				}else{
@@ -331,6 +326,7 @@ let HAL = {
 				try{
 					out += eval(source);
 				}catch(exception){
+					//log(ERROR, source);
 					log(ERROR, `Something went horribly wrong: ${exception}`);
 				}
 			}else if(child.nodeName == 'plural'){
@@ -394,12 +390,21 @@ function mainLoop(){
 	});
 }
 
+
+const db = Igor.getDatabase('db.json');
+db.defaults({concepts: {}, essentials: ["", "plurals", "silly", "todo"]}).write();
+Igor.createDatabase("plurals");
+Igor.createDatabase("silly");
+Igor.createDatabase("todo");
+HAL.db = db;
 ut.setRoutines(HAL);
 HAL.init('1cat.aiml');
+HAL.loadAIML('_silly.aiml');
 HAL.loadAIML('_db.aiml');
 HAL.loadAIML('_js.aiml');
-HAL.loadAIML('_silly.aiml');
+HAL.loadAIML('_todo.aiml');
 HAL.loadAIML('_system.aiml');
 HAL.loadAIML('_plurals.aiml');
 HAL.loadAIML('_concept.aiml');
+Igor.loadSillies(HAL);
 mainLoop();
