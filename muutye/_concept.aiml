@@ -1,4 +1,6 @@
 <aiml version="1.0">
+  <!-- 1 parameter: `<star/>` -->
+  <!-- 2 parameters: `<star index="1"/>`, `<star index="2"/>` -->
 
   <category>
     <pattern>Add concept *</pattern>
@@ -36,6 +38,26 @@
   <category>
     <pattern>list *</pattern>
     <template><script>Igor.list(HAL, `<star/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>* have a *</pattern>
+    <template><script>Igor.addConceptProperty(db, `<star/>`);</script></template>
+  </category>
+
+  <category>
+    <pattern>Types</pattern>
+    <template><script>db.getState().types.numberedList();</script></template>
+  </category>
+
+  <category>
+    <pattern>Domains</pattern>
+    <template><script>db.getState().domains.numberedKeyValues();</script></template>
+  </category>
+
+  <category>
+    <pattern>Create domain * as *</pattern>
+    <template><script>Igor.addDomain(db, `<star index="1"/>`, `<star index="2"/>`);</script></template>
   </category>
 
 </aiml>
