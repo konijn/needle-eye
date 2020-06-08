@@ -17,30 +17,4 @@
     <template><script>Igor.listTodo(`<star/>`);</script></template>
   </category>
 
-
-</aiml>ipt></template>
-  </category>
-
-  <category>
-    <pattern>drop db *</pattern>
-    <template><script>Igor.dropDatabase(`<star/>`)</script></template>
-  </category>
-
-  <category>
-    <pattern>cat db *</pattern>
-    <template><script>JSON.stringify(Igor.getDatabaseState(`<star/>`));</script></template>
-  </category>
-
-  <category>
-    <pattern>db * is not essential</pattern>
-    <template><script>Igor.setDatabaseAsNotEssential(db, `<star/>`);</script></template>
-  </category>
-
-  <category>
-    <pattern>db * is essential</pattern>
-    <template><script>Igor.setDatabaseAsEssential(db, `<star/>`),"<star/> is now essential."</script></template>
-  </category>
-
-</aiml>>ry>
-
-</aiml>l>
+</aiml>
