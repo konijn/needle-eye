@@ -130,15 +130,56 @@ module.exports = {
 			return `I don't think ${this.plural(concept)} is a proper concept`.yellow;
 		}
 		//console.log('we made it');
-		state.concepts[concept].list.push(s);
+		const position = state.concepts[concept].list.push(s);
 		HAL.db.setState(state).write();
+		return `I now know about ${position} ${this.plural(concept)}`;
+	},
+
+	list: function list(HAL, s){
+		const original = s;
+		if(!s){
+			s = HAL.brain.predicates.considering;
+		}
+		if(!s){
+			return `I dont know what you want a list of`;
+		}
+		const state = HAL.db.getState();
+		if(!state.concepts[s] && s.endsWith('s')){
+			s = this.singular(s);
+		}
+		if(!state.concepts[s] && state[original]){
+			console.log(state[original].numberedList());
+		}
+		if(!state.concepts[s] && state[s]){
+			console.log(state[s].numberedList());
+		}
+		if(state.concepts[s]){
+			const list = state.concepts[s].list;
+			const idLength = (list.length + " ").length;
+			return state.concepts[s].list.map((concept,id)=>`${(id+1+'').alignLeft(idLength)} ${concept}`).join('\n');
+		}
+		return `Not sure about the concept of ${s}`;
 	},
 
 	considerConcept: function considerConcept(HAL, concept){
 		//Okay
 		concept = concept.endsWith('s')?concept:this.plural(concept);
+		if(HAL.db.getState()[concept]){
+				return `There is no point in considering ${concept}`;
+		}
 		HAL.brain.predicates.considering = concept;
 		return `Focusing now on ${concept}`;
+	},
+
+	addDomain: function addDomain(db, domain, type){
+		domain = domain.split(/\s/).map(s=>s.capitalize()).join("").decapitalize();
+		const state = db.getState();
+		if(!state.types.has(type)){
+			return `I dont know the ${type} type`;
+		}
+		state.domains[domain] = type;
+		console.log(state);
+		db.setState(state).write();
 	},
 
 	createDatabase: function createDatabase(name){
@@ -203,6 +244,7 @@ module.exports = {
 	},
 
 	getDatabaseState: function getDatabaseState(name){
+		log(DEBUG, `Getting database state for ${name}`);
 		const db = this.getDatabase(name);
 		let state = db.getState();
 		//For good measure, and to make writeDatabaseState happy
