@@ -392,7 +392,7 @@ function mainLoop(){
 
 
 const db = Igor.getDatabase('db.json');
-db.defaults({concepts: {}, essentials: ["", "plurals", "silly", "todo"]}).write();
+db.defaults({concepts: {}, essentials: ["", "plurals", "silly", "todo"], types: ["string","number","date","boolean"], domains:{}}).write();
 Igor.createDatabase("plurals");
 Igor.createDatabase("silly");
 Igor.createDatabase("todo");
