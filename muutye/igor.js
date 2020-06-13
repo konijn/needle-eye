@@ -14,52 +14,23 @@ const fs = require('fs');
 //Mine
 const log = require('./log.js').log;
 
-
 /*
   Design philosophy for Igor
   Igor is in essence brain less, he can work with what you give, and he can log
-  More specifically, Igor should not be tasked with tracking state
-*/
+  More specifically, Igor must not be tasked with tracking state
 
+  To keep Igor manageable, you can create a module in ./aspects
+	all modules in there will be loaded in to Igor
+*/
 
 module.exports = {
 
-	//Search for a given tag that is in a subnode, ensure there is only one
-	getUniqueTag: function getUniqueTag(node, tag){
-		const nodeList = node.getElementsByTagName(tag);
-		if(nodeList.length === 0){
-			log(CATASTROPHE,`Found no ${tag} tag`);
-		}else if(nodeList.length > 1){
-			log(WARNING,`Got ${nodeList.length-1} too many ${tag} tags in ${node.tagName}`);
-		}
-		return nodeList[0];
-	},
-
-	//Search for a given tag, report whether it was found or not
-	hasTag: function hasTag(node, tag){
-		return !!node.getElementsByTagName(tag).length;
-	},
-
-	//Search for a given tag, report whether it was found or not
-	getTags: function getTags(node, tag){
-		return Array.from(node.getElementsByTagName(tag));
-	},
-
 	//Log the patterns of all provided categories
+	//TODO, deal with regexes
 	dumpPatterns: function dumpPatterns(categories){
 		for(const category of categories){
 			console.log(category.pattern);
 		}
-	},
-
-	//THIS sentence Capitalized -> This Sentence Capitalized
-	capitalize: function capitalize(s){
-		return s.split(" ").map(s => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(" ");
-	},
-
-	//THIS sentence Capitalized. -> This sentence capitalized.
-	sentence: function sentence(s){
-		return s[0].toUpperCase() + s.slice(1);
 	},
 
 	//Valid filenames consist of 12 characters, a dot, and up to 3 characters
@@ -72,16 +43,6 @@ module.exports = {
 		if(!fs.existsSync('./' + folder)){
 			fs.mkdirSync(folder);
 		}
-	},
-
-	//nodes are not arrays, so we cant use Array.prototype.filter
-	filterNodes: function filterNodes(nodes, filter){
-		const out = [];
-		for(let i = 0; i < nodes.length; i++){
-			if(filter(nodes[i]))
-				out.push(nodes[i]);
-		}
-		return out;
 	},
 
 	getRandomIntInclusive: function getRandomIntInclusive(min, max) {
@@ -182,171 +143,7 @@ module.exports = {
 		db.setState(state).write();
 	},
 
-	createDatabase: function createDatabase(name){
-		const db = this.getDatabase(name);
-		const createdOn = (new Date()).toISOString();
-		db.defaults({name, createdOn }).write();
-		const dbCreatedOn = db.get('createdOn').value();
-		if(createdOn==dbCreatedOn){
-			return `Database created for ${name} as db.${name}.json`;
-		}else{
-			return `Database was created as db.${name}.json on ${dbCreatedOn}`;
-		}
-	},
-
-	listDatabases: function listDatabases(){
-		const stats = fs.readdirSync("./").filter(f=>f.endsWith('.json')).filter(f=>f.startsWith('db.'));
-		stats.forEach(f=>console.log(f));
-		return `Total count: ${stats.length}`;
-	},
-
-	dropDatabase: function dropDatabase(name){
-		if(this.isEssentialDatabase(name)){
-			return 'I cannot drop this essential database';
-		}
-		try{
-			const file = `db.${name}.json`;
-			fs.unlinkSync(file);
-		}catch(e){
-			console.log(e.toString().split("\n").shift().yellow);
-			//console.log(JSON.stringify(e));
-			return 'I am not sure this went according to plan';
-		}
-		return "Database dropped";
-	},
-
-	isEssentialDatabase: function isEssentialDatabase(name){
-		//Name is the database, not the file name, so the name of db.plurals.json is plurals
-		const essentials = this.getDatabaseState("db.json").essentials;
-		console.log(essentials);
-		return essentials.has(name);
-	},
-
-	setDatabaseAsNotEssential: function setNotEssential(db, name){
-	  const state = db.getState();
-	  state.essentials = state.essentials.drop(name);
-	  db.setState(state).write();
-	},
-
-	setDatabaseAsEssential: function setEssential(db, name){
-	  const state = db.getState();
-	  state.essentials.push(name);
-	  db.setState(state).write();
-	},
-
-	getDatabase: function getDatabase(name){
-		const low = require('lowdb');
-		const AdapterBuilder = require('lowdb/adapters/FileSync');
-		//Being very flexible here, possibly inviting sloppyness
-		const fileName = name.endsWith('.json') ? name : `db.${name}.json`;
-		const adapter = new AdapterBuilder(fileName);
-		return low(adapter);
-	},
-
-	getDatabaseState: function getDatabaseState(name){
-		log(DEBUG, `Getting database state for ${name}`);
-		const db = this.getDatabase(name);
-		let state = db.getState();
-		//For good measure, and to make writeDatabaseState happy
-		state.name = name;
-		return state;
-	},
-
-	writeDatabaseState: function writeDatabaseState(state){
-		const db = this.getDatabase(state.name);
-		db.setState(state).write();
-	},
-
-	addPlural: function addPlural(singular, plural){
-		const low = require('lowdb');
-		const AdapterBuilder = require('lowdb/adapters/FileSync');
-		const adapter = new AdapterBuilder(`db.plurals.json`);
-		const db = low(adapter);
-		let state = db.getState();
-		//console.log(singular, plural);
-		//console.log('state', state);
-		state.plurals = state.plurals || {};
-		state.singulars = state.singulars || {};
-		const currentPlural = state.plurals[singular];
-		if(currentPlural){
-			delete state.plurals[singular];
-			delete state.singulars[plural];
-		}
-		state.plurals[singular] = plural;
-		state.singulars[plural] = singular;
-
-		db.setState(state).write();
-	},
-
-	plural: function plural(word){
-
-		const state = this.getDatabaseState('plurals');
-
-		if(state.plurals[word]){
-			return state.plurals[word];
-		}
-
-		//Things are slightly complicated when the word already ends with an "s," or with a "ch," "sh," "x," or "z."
-		//In this case, it's often correct to add "es" instead.
-		if(word.endsWith('s') || word.endsWith('ch') || word.endsWith('sh') || word.endsWith('x') || word.endsWith('z')){
-			return word + 'es';
-		}
-
-		if(word.endsWith('y')){
-			return word.replace(/y$/,"ies");
-		}
-
-		return word + 's';
-	},
-
-	singular: function singular(word){
-
-		const state = this.getDatabaseState('plurals');
-
-		if(state.singulars[word]){
-			return state.singulars[word];
-		}
-
-		//Things are slightly complicated when the word already ends with an "s," or with a "ch," "sh," "x," or "z."
-		//In this case, it's often correct to add "es" instead.
-		if(word.endsWith('ses') || word.endsWith('xes') || word.endsWith('zes') || word.endsWith('ches') || word.endsWith('shes')){
-			return word.slice(0,-2);
-		}
-
-		if(word.endsWith('ies')){
-			return word.replace(/ies$/,"y");
-		}
-
-		if(word.endsWith('s')){
-			return word.slice(0,-1);
-		}
-
-		return word;
-	},
-
-	addSilly: function addSilly(challenge, response){
-
-		const state = this.getDatabaseState('silly');
-		state.sillies = state.sillies || {};
-		state.sillies[challenge] = response;
-		this.writeDatabaseState(state);
-	},
-
-	loadSillies: function loadSillies(HAL){
-		const state = this.getDatabaseState('silly');
-		for(const silly of Object.keys(state.sillies)){
-			//Building a parsed XML node by hand..
-			//Madness, I tell you, madness!!!!
-			HAL.brain.categories.push({ pattern:silly.toLowerCase(),
-			                            template: {
-			                              childNodes: [
-			                                { nodeName: '#text',
-			                                  nodeValue: state.sillies[silly],
-			                                  parentNode: {nodeName:'template'}
-			                                }]}});
-		}
-	},
-
+	//TODO teach Muutye about todo's so that this does not need to be hard coded
 	addTodo: function addTodo(task){
 		const state = this.getDatabaseState('todo');
 		state.list = state.list || [];
@@ -363,4 +160,14 @@ module.exports = {
 		const state = this.getDatabaseState('todo');
 	},
 
+	isLocalFile: function isLocalFile(fileName){
+		return true;
+	},
 };
+
+/*Build Igor from aspects*/
+const files = fs.readdirSync('./aspects/');
+for(const file of files){
+	log(DEBUG, `./aspects/${file}`);
+	Object.assign(module.exports, require(`./aspects/${file}`));
+}
