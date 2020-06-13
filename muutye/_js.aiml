@@ -38,4 +38,20 @@
     <template><script>Igor.dumpPatterns(HAL.brain.categories);</script></template>
   </category>
 
+  <category>
+    <regex>be verbose</regex>
+    <regex>verbose</regex>
+    <regex>verbose ON</regex>
+    <template><script>logger.setLogLevel(0),"Log level set to DEBUG."</script></template>
+  </category>
+
+  <category>
+    <regex>Dont be verbose</regex>
+    <regex>Don't be verbose</regex>
+    <regex>verbose OFF</regex>
+    <regex>be quiet</regex>
+    <regex>quiet</regex>
+    <template><script>logger.setLogLevel(8),"Log level set to ERROR."</script></template>
+  </category>
+
 </aiml>
