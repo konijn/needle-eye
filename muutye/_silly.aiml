@@ -14,7 +14,12 @@
 
   <category>
     <pattern>reload sillies</pattern>
-    <template><script>Igor.loadSillies(), "I reloaded the sillies.";</script></template>>
+    <template><script>Igor.loadSillies(HAL), "I reloaded the sillies.";</script></template>>
+  </category>
+
+  <category>
+    <pattern>drop silly *</pattern>
+    <template><script>Igor.dropSilly(HAL, `<star/>`);</script></template>>
   </category>
 
 </aiml>
