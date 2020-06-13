@@ -30,12 +30,16 @@ String.prototype.decapitalize = function stringDecapitalize() {
 
 String.prototype.alignLeft = function stringAlignLeft(length, filler){
 	filler = filler || ' ';
-	return (this + filler.repeat(length - this.length)).substring(0, length);
+	return (this + filler.repeat(Math.max(length - this.length, 0))).substring(0, length);
+};
+
+String.prototype.dropTrailing = function stringDropTrailing(trail){
+	return this.endsWith(trail)?this.slice(0,-1*trail.length):this;
 };
 
 Number.prototype.alignLeft = function numberAlignLeft(length, filler){
 	return (this+'').alignLeft(length, filler);
-}
+};
 
 Array.prototype.has = function arrayHas(element){
 	return this.includes(element);
@@ -43,6 +47,11 @@ Array.prototype.has = function arrayHas(element){
 
 Array.prototype.drop = function arrayDrop(element){
 	return this.filter(e => e != element);
+};
+
+//THIS sentence Capitalized -> This Sentence Capitalized
+String.prototype.capitalizeSentence = function stringCapitalizeSentence(){
+	return this.split(" ").map(s => s[0].toUpperCase() + s.slice(1).toLowerCase()).join(" ");
 };
 
 Array.prototype.numberedList = function numberedList(){
@@ -53,6 +62,21 @@ Array.prototype.numberedList = function numberedList(){
 Object.prototype.numberedKeyValues = function numberedKeyValues(){
 	const keys = Object.keys(this);
 	const keysLength = Math.max(...keys.map(key => key.length));
-	const idLength = (keys.length+'').length;
-	return keys.map((key,index)=>`${index.alignLeft(idLength)} ${key.alignLeft(keysLength)} ${this[key]}`).join('\n');
-}
+	const idLength = (keys.length+1+'').length;
+	return keys.map((key,index)=>`${(index+1).alignLeft(idLength)} ${(key).alignLeft(keysLength)} ${this[key]}`).join('\n');
+};
+
+if (!('toJSON' in Error.prototype))
+Object.defineProperty(Error.prototype, 'toJSON', {
+    value: function () {
+        var alt = {};
+
+        Object.getOwnPropertyNames(this).forEach(function (key) {
+            alt[key] = this[key];
+        }, this);
+
+        return alt;
+    },
+    configurable: true,
+    writable: true
+});
