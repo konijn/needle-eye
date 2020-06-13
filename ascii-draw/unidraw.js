@@ -2,7 +2,7 @@
 //Documentation:
 //  http://en.wikipedia.org/wiki/Box-drawing_character
 //Competition:
-//  http://www.asciidraw.com/#Draw 
+//  http://www.asciidraw.com/#Draw
 //  http://asciiflow.com/
 
 (function IIFE(){
@@ -38,7 +38,7 @@ var model = (function()
         cells[y] = cells[y] || [];
         x = originalX;
       }
-      else if ( c == '\t' ) 
+      else if ( c == '\t' )
       {
         x += tabSize;
       }
@@ -69,28 +69,28 @@ var model = (function()
   { //Move everything one character to the left of the cursor
     if( cells[ model.cursor.y ] )
       cells[ model.cursor.y ].splice( model.cursor.x-1 , 1 );
-    model.cursor.recede();    
+    model.cursor.recede();
   }
   function addVersion( key )
   { //Called internally. add a version to a version array (found with `key`)
     var json = localStorage[key];
     var versions = json ? JSON.parse( json ) : [];
     versions.push( stringify() );
-    localStorage[key] = JSON.stringify( versions );    
+    localStorage[key] = JSON.stringify( versions );
   }
   function getVersion( key )
   { //Called internally, get a version (and remove it) from a version array
     var json = localStorage[key];
     var versions = json ? JSON.parse( json ) : [];
     var version = versions.pop();
-    localStorage[key] = JSON.stringify( versions );      
+    localStorage[key] = JSON.stringify( versions );
     return version;
   }
   function storeVersion()
   { //Called from controller, removes all redo versions
     addVersion( 'undo' , stringify()  );
     localStorage.removeItem( 'redo' );
-  } 
+  }
   function restoreVersion()
   { //Called from controller, adds a redo version
     var version = getVersion( 'undo' );
@@ -107,14 +107,14 @@ var model = (function()
       addVersion( 'undo' );
       cells = [];
       write( 0 , 0 , version );
-    }    
+    }
   }
   function isLineCharacter(  cursor, dx , dy , returnValue )
   {
     cursor = { x: cursor.x + dx , y: cursor.y + dy };
-    return ~'╔═╦╗║╠╬╣╚╩╝><'.indexOf( getCell( cursor ) ) ? returnValue : 0;          
-  }  
-  
+    return ~'╔═╦╗║╠╬╣╚╩╝><'.indexOf( getCell( cursor ) ) ? returnValue : 0;
+  }
+
   //Modulify
   return {
     write: write,
@@ -148,8 +148,8 @@ var ui = (function()
       ho, //Horizontal offset for writing
       metrics,
       box;
-  
-  //Exposed    
+
+  //Exposed
   function breathe()
   { //Set the `caret` in a grey shade that follows a breathing cycle
     var rightNow = new Date(),
@@ -160,7 +160,7 @@ var ui = (function()
         cx = model.cursor.x,
         cy = model.cursor.y;
 
-    context.strokeStyle = 'rgb(' + shade + ',' + shade + ',' + shade + ')';             
+    context.strokeStyle = 'rgb(' + shade + ',' + shade + ',' + shade + ')';
     context.lineWidth = 0.5;
     context.beginPath();
 
@@ -173,7 +173,7 @@ var ui = (function()
   }
   function drawBox()
   {
-    context.strokeStyle = 'black';             
+    context.strokeStyle = 'black';
     context.lineWidth = 0.5;
     context.beginPath();
 
@@ -182,7 +182,7 @@ var ui = (function()
     context.lineTo((box.to.x+1) *fw + p, (box.to.y+1) *fh + p);  //Bottom Right
     context.lineTo(box.from.x   *fw + p, (box.to.y+1) *fh + p);  //Bottom Left
     context.lineTo(box.from.x   *fw + p, box.from.y   *fh + p);  //Top Left
-    context.stroke();        
+    context.stroke();
   }
   function setBox( cell1 , cell2 )
   {
@@ -191,7 +191,7 @@ var ui = (function()
   function clearBox()
   {
     box = undefined;
-  }  
+  }
   function getBox()
   {
     return box;
@@ -207,38 +207,38 @@ var ui = (function()
     fh = fontSize+1;
     fw = metrics.width;
     vo = p+fh*magicalMultiplier;
-    ho = p;    
-    drawGrid();    
+    ho = p;
+    drawGrid();
   }
   function drawGrid()
   {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    for (var x = 0; x < w; x += fw) 
+    for (var x = 0; x < w; x += fw)
     {
       context.moveTo(x + p, 0 + p);
       context.lineTo(x + p, h );
     }
 
-    for (var y = 0; y < h; y += fh) 
+    for (var y = 0; y < h; y += fh)
     {
       context.moveTo(0 + p, y + p);
       context.lineTo(w , y + p);
     }
     context.lineWidth = 0.1;
     context.strokeStyle = "lightgrey";
-    context.stroke();    
-    
+    context.stroke();
+
     context.strokeStyle = "black";
-    context.fillStyle = "black";    
-      
+    context.fillStyle = "black";
+
     var string = model.stringify();
     if( string ){
       var strings = string.split("\n");
       for( var row = 0 ; row < strings.length ; row++ )
         for( var col = 0 ; col < strings[row].length ; col++ )
-          context.fillText( strings[row][col] , ho  + fw * col  , vo + fh * row );  
+          context.fillText( strings[row][col] , ho  + fw * col  , vo + fh * row );
     }
-    
+
     if( box )
       drawBox( box.from , box.to );
   }
@@ -248,7 +248,7 @@ var ui = (function()
         y = Math.floor((cursor.y - p ) / fh );
     //Cheat on boundaries
     x = x < 0 ? 0 : x;
-    y = y < 0 ? 0 : y; 
+    y = y < 0 ? 0 : y;
     //Return a new cell cursor object
     return new Cursor(x,y);
   }
@@ -266,7 +266,7 @@ var ui = (function()
 }());
 
 var controller = (function()
-{  
+{
   var BACKSPACE = 8,
       TAB = 9,
       ARROW_LEFT = 37,
@@ -276,19 +276,20 @@ var controller = (function()
       DELETE = 46,
       KEY_B = 66,
       KEY_C = 67,
+      KEY_X = 88,
       KEY_Y = 89,
-      KEY_Z = 90;  
-  
+      KEY_Z = 90;
+
   var startingCell,
       currentCell;
-  
+
   function normalizeEvent(e)
   { //Normalize which for key events, inspiration:SO
     if ( e.which === null && (e.charCode !== null || e.keyCode !== null) ) {
       e.which = e.charCode !== null ? e.charCode : e.keyCode;
-    }    
+    }
   }
-    
+
   function onContentLoaded()
   { //Could have been called onInit
     //Set the 3 globals
@@ -309,7 +310,7 @@ var controller = (function()
     document.addEventListener( "paste", onPaste );
     //Make the cursor breathe
     setInterval( ui.breathe , 1000/12 ); // 12 frames per second
-  } 
+  }
   function onPaste(e)
   { //Determine where to paste, paste, determine & set new cursor location, redraw everything
     var cursor = model.cursor;
@@ -368,32 +369,36 @@ var controller = (function()
     {
       model.backspace();
       e.preventDefault();
-    } 
+    }
     else if( e.which == TAB )
     {
       model.cursor =  model.setCell( model.cursor , '\t' );
       e.preventDefault();
-    }       
+    }
     else if( e.which == ARROW_LEFT ){
       model.cursor.recede();
-    }    
+    }
     else if( e.which == ARROW_RIGHT ){
       model.cursor.advance();
     }
     else if( e.which == ARROW_UP ){
-      model.cursor.up();     
+      model.cursor.up();
     }
     else if( e.which == ARROW_DOWN ){
-      model.cursor.down();     
-    }      
-    else if( e.keyIdentifier == 'Home' && e.ctrlKey ){
+      model.cursor.down();
+    }
+    else if( e.key == 'Home' && e.ctrlKey ){
       model.cursor = new Cursor( 0, 0 );
     }
-    else if( e.keyIdentifier == 'Home' )
+    else if( e.key == 'Home' )
     { //Move to complete left unless already there, in that case go top left
-      model.cursor.x ? model.cursor.x = 0 : model.cursor.y = 0;
+      if(model.cursor.x){
+        model.cursor.x = 0;
+      }else{
+        model.cursor.y = 0;
+      }
     }
-    else if( e.which == KEY_C && e.ctrlKey )
+    else if( ( e.which == KEY_C || e.which == KEY_X ) && e.ctrlKey )
     { //Copy a box or a whole character
       if( box )
       {
@@ -402,20 +407,24 @@ var controller = (function()
         box.each( function(cursor){ lines[ cursor.y - box.from.y ] += model.getCell(cursor); } );
         var line = lines.join("\n");
         clipboard.value = line;
-      } 
+      }
       else
       {
-        clipboard.value = model.getCell( ui.getCursor() ) || " ";  
+        clipboard.value = model.getCell( ui.getCursor() ) || " ";
+      }
+      /*Clipboards are fickle*/
+      if(e.which == KEY_X){
+        box.each( function(cursor){ model.setCell( cursor, " " ); } );
       }
       clipboard.focus();
       clipboard.select();
-    }   
+    }
     else if( e.which == KEY_B && e.ctrlKey )
     {
       /* Styles:
-         ╔═╦═╗  ⇓ 
+         ╔═╦═╗  ⇓
          ║ ║ ║  ☺☺
-         ╠═╬═╣ 
+         ╠═╬═╣
          ╚═╩═╝ */
       var onLeft   = 1; //Bitflag 1
       var onRight  = 2; //Bitflag 2
@@ -427,13 +436,13 @@ var controller = (function()
       lineRules[onTop+onLeft] = '╝';
       lineRules[onTop+onRight] = '╚';
       lineRules[onBottom+onLeft] = '╗';
-      lineRules[onBottom+onRight] = '╔';        
+      lineRules[onBottom+onRight] = '╔';
       lineRules[onLeft+onRight+onTop+onBottom] = '╬';
       lineRules[onLeft+onRight+onTop] = '╩';
       lineRules[onLeft+onRight+onBottom] = '╦';
       lineRules[onTop+onBottom+onLeft] = '╣';
       lineRules[onTop+onBottom+onRight] = '╠';
-        
+
       if( box )
       {
         model.storeVersion();
@@ -445,19 +454,19 @@ var controller = (function()
         {
           if( !model.isLineCharacter( cursor , 0 , 0 , true ) )
             return;
-            
-          var neighbourBitFlag = 
+
+          var neighbourBitFlag =
              model.isLineCharacter( cursor , -1 , +0 , onLeft ) +
              model.isLineCharacter( cursor , +1 , +0 , onRight ) +
              model.isLineCharacter( cursor , +0 , +1 , onBottom ) +
              model.isLineCharacter( cursor , +0 , -1 , onTop );
-               
+
             if( lineRules[neighbourBitFlag] )
               model.setCell( cursor , lineRules[neighbourBitFlag] );
           });
-        } 
-      }      
-      else if ( e.which == DELETE )
+        }
+      }
+      else if (e.which == DELETE)
       {
         if( box ){
           box.each( function(cursor){ model.setCell( cursor, " " ); } );
@@ -466,13 +475,13 @@ var controller = (function()
       else if ( e.which == KEY_Z && e.ctrlKey )
       { //Undo
         model.restoreVersion();
-      }      
+      }
       else if ( e.which == KEY_Y && e.ctrlKey )
       { //Undo
         model.redo();
-      }            
+      }
       //Clear the selection box after a key press (Control does not count)
-      if( (e.keyIdentifier || e.key) != "Control" && box )
+      if( e.key != "Control" && box )
       {
         ui.clearBox();
       }
