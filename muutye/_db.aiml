@@ -2,7 +2,8 @@
 <!-- 1 parameter: `<star/>` -->
 <!-- 2 parameters: `<star index="1"/>`, `<star index="2"/>` -->
   <category>
-    <pattern>db</pattern>
+    <regex>db</regex>
+    <regex>cat db</regex>
     <template><script>JSON.stringify(db.getState());</script></template>
   </category>
 
