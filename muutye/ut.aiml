@@ -185,7 +185,7 @@
 	<!-- system -->
 	<category>
 		<pattern>TEST SYSTEM</pattern>
-		<template>The system says <system>echo hello</system>!</template>
+		<template>The system says <system>echo hello</system></template>
 	</category>
 
 	<!-- that -->
@@ -210,5 +210,35 @@
 		<template>The plural of memory is <plural>memory</plural>, of calf is <plural>calf</plural></template>
 	</category>
 
+   <!-- Sillies -->
+	 <category>
+ 		<pattern>TEST CREATE NEW SILLY</pattern>
+ 		<template><srai>When I say test you say Run!</srai></template>
+ 	</category>
+
+	<category>
+		<pattern>TEST RELOAD SILLIES</pattern>
+		<template><srai>reload sillies</srai></template>
+	</category>
+
+	<category>
+	 <pattern>TEST NEW SILLY</pattern>
+	 <template><srai>test</srai></template>
+	</category>
+
+	<category>
+	 <pattern>TEST DROP SILLY</pattern>
+	 <template><srai>drop silly test</srai></template>
+	</category>
+
+	<category>
+	 <pattern>TEST DROP DROPPED SILLY</pattern>
+	 <template><srai>drop silly test</srai></template>
+	</category>
+
+	<category>
+	 <pattern>TEST DROPPED SILLY</pattern>
+	 <template><srai>test</srai></template>
+	</category>
 
 </aiml>
