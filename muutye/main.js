@@ -35,7 +35,8 @@ const moment = require('moment');
 //Mine, all mine!
 require('./base.js');
 const ut = require('./ut.js');
-const log = require('./log.js').log;
+const logger = require('./log.js');
+const log = logger.log;
 const sub = require('./substitute.js').substitute;
 const Igor = require('./igor.js');
 
@@ -197,9 +198,10 @@ let HAL = {
 			}else if(child.nodeName == 'gender'){
 				out += sub('gender', runNode(child));
 			}else if(child.nodeName == 'system'){
-				out += 'Nice Try';
+				//out += 'Nice Try';
+				out += Igor.systemCall(runNode(child));
 			}else if(child.nodeName == 'sentence'){
-				out += Igor.sentence(runNode(child));
+				out += runNode(child).capitalize();
 			}else if(child.nodeName == 'person'){
 				out += sub('person', runNode(child));
 			}else if(child.nodeName == 'person2'){
@@ -218,6 +220,9 @@ let HAL = {
 				if(category && category.template){
 					out += runNode(category.template);
 				}else{
+					log(DEBUG, `Target: ${target}`);
+					log(DEBUG, `Category: ${category}`);
+					log(DEBUG, `Category Stringified: ${JSON.stringify(target)}`);
 					log(ERROR, `Could not find category ${target}`);
 				}
 			}else if(child.nodeName == 'star'){
@@ -237,7 +242,7 @@ let HAL = {
 					out += (new Date()).toDateString();
 				}
 			}else if(child.nodeName == 'formal'){
-				out += Igor.capitalize(runNode(child));
+				out += runNode(child).capitalizeSentence();
 			}else if(child.nodeName == 'condition'){
 				if(child.hasAttribute('name') && child.hasAttribute('value')){
 					const name = child.getAttribute('name');
@@ -327,6 +332,8 @@ let HAL = {
 					out += eval(source);
 				}catch(exception){
 					//log(ERROR, source);
+					log(DEBUG, `exception is a ${typeof exception}`);
+					log(DEBUG, JSON.stringify(exception, null, 2));
 					log(ERROR, `Something went horribly wrong: ${exception}`);
 				}
 			}else if(child.nodeName == 'plural'){
@@ -397,7 +404,7 @@ Igor.createDatabase("plurals");
 Igor.createDatabase("silly");
 Igor.createDatabase("todo");
 HAL.db = db;
-ut.setRoutines(HAL);
+
 HAL.init('1cat.aiml');
 HAL.loadAIML('_silly.aiml');
 HAL.loadAIML('_db.aiml');
