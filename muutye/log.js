@@ -1,4 +1,4 @@
-/*jshint esversion: 6 */
+/*jshint esversion: 6, node: true */
 
 //const io = require('readline').createInterface({ input: process.stdin, output: process.stdout });
 
@@ -15,6 +15,10 @@ let logLevel = ERROR; //Default is ERROR
 module.exports = {
 
 	log: function log(level, ...rest){
+		//Such a bad hack, I should be fired
+		if(typeof level == 'function'){
+			log.call(level());
+		}
 		//Bad caller, no log level.
 		if(!rest){
 			console.log(level);
@@ -40,7 +44,12 @@ module.exports = {
 			}
 			console.log(level, ...rest);
 		}
-	}
+	},
+	setLogLevel: function setLogLevel(level){
+		logLevel = level;
+	},
+	getLogLevel: function getLogLevel(){
+		return logLevel;
+	},
 
 };
-;
