@@ -76,7 +76,15 @@ var model = (function()
     var json = localStorage[key];
     var versions = json ? JSON.parse( json ) : [];
     versions.push( stringify() );
-    localStorage[key] = JSON.stringify( versions );
+    try{
+      localStorage[key] = JSON.stringify( versions );
+    }catch(exception){
+      if(exception  instanceof DOMException){
+        //Lets drop half of the undo's.. this still allows a long history..
+        //
+
+      }
+    }
   }
   function getVersion( key )
   { //Called internally, get a version (and remove it) from a version array
@@ -274,6 +282,7 @@ var controller = (function()
       ARROW_RIGHT = 39,
       ARROW_DOWN = 40,
       DELETE = 46,
+      KEY_A = 65,
       KEY_B = 66,
       KEY_C = 67,
       KEY_X = 88,
@@ -418,6 +427,13 @@ var controller = (function()
       }
       clipboard.focus();
       clipboard.select();
+    }
+    else if( e.which == KEY_A && e.ctrlKey )
+    {
+      if( box )
+      {
+
+      }
     }
     else if( e.which == KEY_B && e.ctrlKey )
     {
