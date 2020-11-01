@@ -4,10 +4,11 @@
   https://game-icons.net/
   https://github.com/liabru/matter-js/issues/321
 */
+/*jshint esversion: 6 */
 
-var game = new Game()
-  , data = game.data
-  , ui   = new UI();
+var game = new Game(),
+    data = game.data,
+    ui   = new UI();
 
 function Game() {
 
@@ -25,19 +26,21 @@ Game.prototype.onClick = function onClick(body){
     UI.createLog(ui);
     UI.remove(body);
   }
-}
+};
 
 function update() {
   //console.log('Tick');
   if (!data.gameStarted) {
     message('Welcome to Portal Merchant');
     message('You see a start portal');
-    message('You feel compelled to click it');
+    message('You feel compelled to activate it');
 
   }
 }
 
-function message(msg) {}
+function message(msg) {
+
+}
 
 function load() {
   return scaffoldLoad(JSON.parse(localStorage.getItem('data') || "{}"));
@@ -70,6 +73,4 @@ function scaffoldSave(data) {
 function step(timestamp) {
   UI.last = UI.last || timestamp;
   let progress = timestamp - UI.last;
-
 }
-

@@ -1,18 +1,18 @@
 // install plugin
-Matter.use('matter-attractors'// PLUGIN_NAME
-);
+Matter.use('matter-attractors');// PLUGIN_NAME
+Matter.use('matter-collision-events');
 
 // module aliases
-var Engine = Matter.Engine
-  , Events = Matter.Events
-  , Runner = Matter.Runner
-  , Render = Matter.Render
-  , World = Matter.World
-  , Body = Matter.Body
-  , Mouse = Matter.Mouse
-  , Common = Matter.Common
-  , Bodies = Matter.Bodies
-  , MouseConstraint = Matter.MouseConstraint;
+var Engine = Matter.Engine,
+    Events = Matter.Events,
+    Runner = Matter.Runner,
+    Render = Matter.Render,
+    World = Matter.World,
+    Body = Matter.Body,
+    Mouse = Matter.Mouse,
+    Common = Matter.Common,
+    Bodies = Matter.Bodies,
+    MouseConstraint = Matter.MouseConstraint;
 
 // create engine
 var engine = Engine.create();
@@ -58,7 +58,7 @@ var attractiveBody = Bodies.circle(render.options.width / 2, render.options.heig
     }
   },
 
-  // example of an attractor function that 
+  // example of an attractor function that
   // returns a force vector that applies to bodyB
   plugin: {
     attractors: [// MatterAttractors.Attractors.gravity(bodyA, bodyB)
@@ -106,12 +106,22 @@ Events.on(engine, 'afterUpdate', function() {
 });
 */
 
-Events.on(mouseConstraint, 'mousedown', doStuff)
+Events.on(mouseConstraint, 'mousedown', doStuff);
+
+Matter.Body.onCollide(function collided(pair){
+  console.log('collision', pair);
+});
+
+/*Events.onCollide(function(pair) {
+    console.log('BoxB got hit!', pair);
+		pair.bodyA.render.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+		pair.bodyB.render.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+  });*/
 
 function doStuff(e) {
 
   e.source.constraint.render.visible = false;
   if (mouseConstraint.body) {
-    console.log(mouseConstraint.body)
+    console.log(mouseConstraint.body);
   }
 }
