@@ -125,7 +125,7 @@ UI.createImp = function createImp(ui) {
     label: 'Imp,' + guid(),
     render: {
       sprite: {
-        texture: '/png/imp.png',
+        texture: './png/imp.png',
         xScale: 0.1,
         yScale: 0.1
       }
@@ -148,7 +148,7 @@ UI.createLog = function createLog(ui) {
     label: 'Log,' + guid(),
     render: {
       sprite: {
-        texture: '/png/log.png',
+        texture: './png/log.png',
         xScale: 0.1,
         yScale: 0.1
       }
