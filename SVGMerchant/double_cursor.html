@@ -28,10 +28,10 @@
       Render = Matter.Render,
       World = Matter.World,
       Body = Matter.Body,
-      Mouse = Matter.Mouse,
+      //Mouse = Matter.Mouse,
       Common = Matter.Common,
-      Bodies = Matter.Bodies,
-      MouseConstraint = Matter.MouseConstraint;
+      Bodies = Matter.Bodies;
+      //MouseConstraint = Matter.MouseConstraint;
 
   function UI() {
     listenToResize();
@@ -65,26 +65,7 @@
     this.world = this.engine.world;
     this.world.gravity.scale = 0;
 
-    // add a mouse controlled constraint
-    this.mouseConstraint = MouseConstraint.create(this.engine, {
-      constraint: {
-        render: {
-          visible: false
-        }
-      }
-    });
-
-    World.add(this.world, this.mouseConstraint);
-
     World.add(this.world, UI.createPortal(this));
-
-    Events.on(this.mouseConstraint, 'mousedown', passBodyToGame);
-
-    function passBodyToGame(e) {
-      if (ui.mouseConstraint.body) {
-        game.onClick(ui.mouseConstraint.body);
-      }
-    }
 
   }
 
@@ -134,76 +115,6 @@
       }
     });
   };
-
-  UI.createImp = function createImp(ui) {
-
-    spot = UI.rollBorderLocation(ui);
-
-    var imp = Bodies.circle(spot.x, spot.y, 32, {
-      label: 'Imp,' + guid(),
-      render: {
-        sprite: {
-          texture: '/png/imp.png',
-          xScale: 0.1,
-          yScale: 0.1
-        }
-      },
-    });
-
-    imp.onCollide(function(pair) {
-      console.log('Imp got hit!', pair);
-    });
-
-    World.add(ui.world, imp);
-    return imp;
-  }
-
-  UI.createLog = function createLog(ui) {
-
-    spot = UI.rollBorderLocation(ui);
-
-    var log = Bodies.circle(spot.x, spot.y, 32, {
-      label: 'Log,' + guid(),
-      render: {
-        sprite: {
-          texture: '/png/log.png',
-          xScale: 0.1,
-          yScale: 0.1
-        }
-      },
-    });
-
-    World.add(ui.world, log);
-    return log;
-  }
-
-  UI.rollBorderLocation = function rollBorderLocation(ui) {
-
-    let border = Common.choose([1, 2, 3, 4])
-      , x = Common.random(0, ui.render.options.width)
-      , y = Common.random(0, ui.render.options.height);
-
-    if (border == 1)
-      return {
-        x: 0,
-        y: y
-      }
-    if (border == 2)
-      return {
-        x: ui.render.options.width,
-        y: y
-      }
-    if (border == 3)
-      return {
-        x: x,
-        y: 0
-      }
-    if (border == 4)
-      return {
-        x: x,
-        y: ui.render.options.height
-      }
-  }
 
   UI.log = function(txt, x, y) {
     let div = document.createElement("div");
@@ -258,7 +169,7 @@
   Game.prototype.onClick = function onClick(body){
     console.log(body);
     if(body.label=="centerPortal"){
-      UI.createImp(ui);
+      //UI.createImp(ui);
       //UI.log('You summoned an Imp');
     }
     if(body.label.startsWith('Imp,')){
@@ -306,14 +217,10 @@
     return data;
   }
 
-
-
-
   function step(timestamp) {
     UI.last = UI.last || timestamp;
     let progress = timestamp - UI.last;
   }
-
 
   </script>
 
