@@ -42,7 +42,7 @@
 
   <category>
     <pattern>* have a *</pattern>
-    <template><script>Igor.addConceptProperty(db, `<star/>`);</script></template>
+    <template><script>Igor.addConceptProperty(db, `<star index="1"/>`,`<star index="2"/>`);</script></template>
   </category>
 
   <category>

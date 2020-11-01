@@ -163,6 +163,26 @@ module.exports = {
 	isLocalFile: function isLocalFile(fileName){
 		return true;
 	},
+	
+	addConceptProperty: function addConceptProperty(db, concept, property){
+		//created on -> createdOn
+		property = property.camelCase();
+		const state = db.getState();
+		if(state.concepts[this.singular(concept)]){
+			concept = this.singular(concept);
+		}else if(!state.concepts[concept]){
+			return `I dont know a concept called ${concept}`;
+		}
+		if(!state.domains[property]){
+			return `I dont know a domain called ${property}`;
+		}
+		const dbConcept = state.concepts[concept];
+		dbConcept.properties = concept.properties || [];
+		dbConcept.properties.push(property);
+		db.setState(state).write();
+		return `${this.plural(concept)} now have a ${property}}`;
+	}
+	
 };
 
 /*Build Igor from aspects*/
