@@ -19,15 +19,14 @@ canvas {
   max-height: 100%;
 }
 
-canvas:active {
+canvas {
   cursor: pointer;
-  cursor: grabbing;
 }
 
 .message {
   position:absolute;
   background-color: black;
-  color: rgb(225, 219, 208);  
-  z-index: 2; 
+  color: rgb(225, 219, 208);
+  z-index: 2;
   bottom: 30px;
 }
