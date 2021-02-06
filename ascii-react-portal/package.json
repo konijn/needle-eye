@@ -1,0 +1,11 @@
+{
+  "name": "ascii-react-portal",
+  "version": "1.0.0",
+  "description": "PortalTimers",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Tom J Demuyt",
+  "license": "GPL-3.0-or-later"
+}
