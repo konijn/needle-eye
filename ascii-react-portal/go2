@@ -6,4 +6,4 @@ if  [ -x "$(command -v ipconfig)" ]; then
     ipconfig | grep IPv4
 fi
 
-python2 -m SimpleHTTPServer 1234
+python2 -m SimpleHTTPServer 80

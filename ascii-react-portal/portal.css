@@ -2,6 +2,7 @@
 body {
        background-color: black;
                   color: green;
+            font-family: monospace;
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */
@@ -28,3 +29,23 @@ https://stackoverflow.com/a/4407335/7602
 .bold {
   font-weight: bold;
 }
+
+/* Old Skool colors, update screen.js when adding colors */
+db {color:blue}           /*b black*/
+gg {color:green}          /*g green*/
+c  {color:darkcyan}       /*c blue-green*/
+r  {color:red}            /*r red*/
+m  {color:magenta}        /*P pink*/
+pp {color:purple}         /*p purple*/
+rb {color:brown}          /*m mahogany*/
+y  {color:yellow}         /*y yellow*/
+g  {color:grey}           /*w grey (dark white ;)*/
+dg {color:dimgray}        /*d dim grey*/
+bb {color:CornflowerBlue} /*F corn flower blue*/
+bg {color:Chartreuse}     /*G light green*/
+bc {color:Cyan}           /*C bright blue-green*/
+w  {color:white}          /*W bright white*/
+o  {color:orange}         /*o orange*/
+t  {color: #41FF00}       /*t terminal green*/
+ew {color: #FFEFC1}       /*ew egg white*/
+u  { cursor: pointer}     /*Emulate button*/
