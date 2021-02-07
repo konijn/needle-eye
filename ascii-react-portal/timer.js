@@ -1,4 +1,6 @@
 //
+//jshint  esversion: 6
+
 
 function Timer(milliSeconds, uiProps, done){
 	const timer = this;
@@ -25,7 +27,7 @@ function Timer(milliSeconds, uiProps, done){
 function TimerUI(timer, props){
 	const ui = this;
 	this.size = props.size || 10;
-	this.brackets = props.brackets || ["[","]"]
+	this.brackets = props.brackets || ["[","]"];
 	this.dot = props.dot || ["."];
 	this.element = document.getElementById(props.element);
 
@@ -39,7 +41,6 @@ function TimerUI(timer, props){
 			console.log(ui, timer, progress);
 
 		}
-	}
-
+	};
 
 }
