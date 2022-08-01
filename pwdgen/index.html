@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password generator</title>
+  </head>
+  <body>
+    
+    <form>
+      
+    <label for="length">Password Length</label>
+    <input type="number" id="length" placeholder="8">      
+      
+    <label for="symbols">Include Symbolds ( e.g. @#$% )</label>
+    <input type="checkbox" id="symbols" checked>
+      
+    <label for="numbers">Include Numbers:( e.g. 123456 )</label>
+    <input type="checkbox" id="numbers" checked>
+    
+    <label for="lower">Include Lowercase Characters:( e.g. abcdefgh )</label>
+    <input type="checkbox" id="lower" checked>      
+      
+    <label for="upper">Include Uppercase Characters:( e.g. ABCDEFGH )</label>
+    <input type="checkbox" id="upper" checked>      
+      
+    <label for="easy">Exclude Similar & Ambiguous Characters:( e.g. ABCDEFGH )</label>
+    <input type="checkbox" id="easy" checked>        
+      
+    <!-- This will never generate server side, always try to use cookies, and always autoselect the pwd-->  
+    </form>
+    
+  </body>
+</html>
