@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Require https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M2</title>
+    <style>
+      textarea {
+        background-color: black;
+        color: cornflowerblue;
+        font-family: monospace;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <textarea id="io" spellcheck="false"></textarea>
+    </div>
+  </body>
+  <script>
+    String.prototype.endsWithNumber = function endsWithNumber() {
+      return /[0-9]+$/.test(this);
+    }
+    String.prototype.hasOnlyNumbers = function hasOnlyNumbers() {
+      return /^\d+$/.test(this);
+    }
+    String.prototype.has = function stringHas(s) {
+      return this.includes(s);
+    }
+    Array.prototype.has = function arrayHas(s) {
+      return this.includes(s);
+    }      
+    String.prototype.isLowerCamelCase = function stringIsLowerCamelCase(){
+      return ((this[0] == this[0].toLowerCase()) && (this != this.toLowerCase));
+    }
+  </script>
+  <script>
+    //Loader, set focus
+    const OK = Symbol("OK");
+    let commandMap;
+    let repeats;
+    let context;
+    const oops = ['I did not catch that'];
+    window.addEventListener('DOMContentLoaded', onContentLoaded);
+    function onContentLoaded() {
+      io.setSelectionRange(14, 14);
+      io.focus();
+    }
+    //Respond to commands
+    window.addEventListener('keypress', handleKeyPress);
+    function handleKeyPress(e) {
+      if (e.keyCode == 13) {
+        const line = io.value.substr(0, io.selectionStart).split("\n").pop().substr(1);
+        const word1 = line.split(' ')[0];
+        const cmd = word1.isLowerCamelCase()?word1:word1.toLowerCase();
+
+        rememberCommand(line)  ;
+        route(cmd, line);
+        route.requests = [];
+        //So dirty..
+
+        e.preventDefault();
+      }
+    }
+
+    function route(cmd, line) {
+      const request = JSON.stringify({
+        cmd,
+        line
+      });
+      if (route.requests.includes(request)) {
+        console.log(route.requests);
+        console.log({
+          cmd,
+          line
+        });
+        return out('Detected infinite loop, check the console');
+      }
+      let result = trySimpleMap(line) || tryMatcher(cmd, line) || trySimpleMap(cmd) || tryLocalFunction(cmd, line) || tryLocalStorage(cmd, line);
+      if (result === OK) {
+        return;
+      }
+      if (result) {
+        if (repeats.includes(result) || repeats.includes(result.split(" ")[0])) {
+          return route(result.split(" ")[0], result);
+        } else {
+          return out(result);
+        }
+      }
+      out(oops[0]);
+
+    }
+    route.requests = [];
+
+    function out(s, clean=true) {
+      s = s || '';
+      //Sanitize
+      if (clean) {
+        s = s + '\n>';
+      }
+      const location = io.selectionStart;
+      io.value = io.value.substr(0, location) + '\n' + s + io.value.substr(location);
+      io.selectionStart = location + s.length + 1;
+      io.selectionEnd = location + s.length + 1;
+      io.blur()
+      io.focus()
+      return true;
+    }
+    function clear(cmd, line){
+        if(line == "clear history"){
+          drop("drop", "drop _history");
+        }else{
+          _clear();
+        }
+    }
+    function _clear(s = '>') {
+      io.selectionStart = 0;
+      io.value = s;
+      io.selectionStart = s.length+1;
+      io.selectionEnd = s.length+1;
+    }
+    function date(cmd, line) {
+      if(line=='date time'){
+        return date() + ' ' + time();  
+      }else{
+        return new Date().toLocaleDateString();    
+      }
+      
+    }
+    function time(){
+      return new Date().toLocaleTimeString();
+    }
+    function dump(line) {
+      for (const key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+          if(key != 'simpleMap'){
+            out(`localStorage.setItem('${key}', '${localStorage[key]}');`, false);
+          } else {
+            const froms = Object.keys(commandMap);
+            for(const from of froms){
+              out(`>map ${from} to ${commandMap[from]}`, false);    
+            }
+          }
+        }
+      }
+      out("");
+    }
+    function sort(cmd, fullCommand){
+        const [_, separator, ... rest] = fullCommand.split(" ");
+        const line = rest.join(" ");
+        out(line.split(separator).sort().join(separator));
+    }
+    function go(cmd, line) {
+
+      const url = (cmd != line) ? line.split(" ")[1] : 'https://example.com/';
+      let request = new Request(url);
+      console.log('Going for', url);
+
+      fetch(request).then((response)=>{
+        if (!response.ok) {
+          debugger ;console.error('HTTP error! Status:', typeof response, JSON.stringify(response));
+
+        }
+        return console.log('Response;', response, response.text().then(out));
+      }
+      ).catch(out);
+
+      out("Gone");
+    }
+    function set(cmd, line) {
+      const [_,key,value] = line.split(" ");
+      localStorage.setItem(key, value);
+      return out(`${key} is set`);
+    }
+    function get(cmd, line) {
+      const [_,key] = line.split(" ");
+      return out(localStorage.getItem(key));
+    }
+    function add(cmd, line) {
+      const parts = line.split(" ");
+      if (parts.length == 3) {
+        const [_,key,value] = line.split(" ");
+        const list = JSON.parse(localStorage.getItem(key)) || [];
+        list.push(value);
+        localStorage.setItem(key, JSON.stringify(list));
+        return out(`Added ${value} to ${key}`);
+      }
+      if (parts.reverse()[1] == "to") {
+        //add x to y
+        const words = parts.reverse();
+        const key = words.pop();
+        words.pop();
+        //get rid of to
+        words.shift();
+        //get rid of add
+        const value = words.join(" ");
+        const list = JSON.parse(localStorage.getItem(key)) || [];
+        list.push(value);
+        localStorage.setItem(key, JSON.stringify(list));
+        return out(`Added ${value} to ${key}`);
+
+      }
+    }
+    function drop(cmd, line) {
+      const [_,key] = line.split(" ");
+      if (!localStorage.getItem(key)) {
+        return out(`Unknown key ${key}`);
+      } else {
+        const value = localStorage[key];
+        localStorage.removeItem(key);
+        return out(`localStorage.setItem('${key}', '${value}');\nDropped`);
+      }
+    }
+    function map(cmd, line) {
+      const parts = line.split(' ');
+      if (parts.length == 3) {
+        const [cmd,from,to] = parts;
+        if (from == 'drop') {
+          if(commandMap[to]){
+            delete commandMap[to];
+            saveSimpleMap();
+           return out(`Dropped ${to}`);
+          }
+          return `There was no map for ${to}`;
+        } else {
+          commandMap[from] = to;
+          saveSimpleMap();
+          return out("Got it!");
+        }
+      }else{
+        const toCount = parts.filter(w=>w=="to").length;
+        if(toCount==0){
+          const [from, ...toList] = line.slice(4).split(' ');
+          const to = toList.join(" ");
+          commandMap[from] = to;
+          saveSimpleMap();          
+          return out("Got it!");        
+        }else if(toCount==1){
+          const [from, to] = line.slice(4).split(" to ");
+          commandMap[from] = to;
+          saveSimpleMap();
+          return out("Got it!");            
+        }else{
+          out("Found more than once the word to, I dont understand");
+        }
+      }
+    }
+    function maps(cmd) {
+      out(localStorage.getItem('simpleMap') || "{}");
+    }
+    function js(cmd, line) {
+      out(eval(line.substring(3)));
+    }
+    function openTab(url) {
+      setTimeout(()=>window.open(url, '_blank'), 200);
+      return "Opened " + url;
+    }
+    function trySimpleMap(cmd) {
+      return commandMap[cmd];
+    }
+    function tryMatcher(cmd, line) {
+      const noSpace = (line.indexOf(" ") === -1);
+      //Call Jira
+      if (cmd.startsWith("cn-") || cmd.startsWith("core-") || cmd.startsWith("ar-") || cmd.startsWith("us-") || cmd.startsWith("raf-")) {
+        return openTab('https://jira.ldc.com/browse/' + cmd.toUpperCase());
+      }
+      //Call SNOW for INC
+      if (noSpace & cmd.startsWith("inc") & cmd.substring(3).hasOnlyNumbers()) {
+        return openTab('https://ldc.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number=' + cmd.toUpperCase());
+      }//Call SNOW for PRB
+      if (noSpace & cmd.startsWith("prb") & cmd.substring(3).hasOnlyNumbers()) {
+        return openTab('https://ldc.service-now.com/nav_to.do?uri=problem.do?sysparm_query=number=' + cmd.toUpperCase());
+      }//Call SNOW for CHG
+      if (noSpace & cmd.startsWith("chg") & cmd.substring(3).hasOnlyNumbers()) {
+        return openTab('https://ldc.service-now.com/nav_to.do?uri=change_request.do?sysparm_query=number=' + cmd.toUpperCase());
+      }//Call SNOW for TASK        
+      if (noSpace & cmd.startsWith("task") & cmd.substring(4).hasOnlyNumbers()) {
+        return openTab('https://ldc.service-now.com/nav_to.do?uri=task.do?sysparm_query=number=' + cmd.toUpperCase());
+      }//Call SNOW for RITM                
+      if (noSpace & cmd.startsWith("ritm") & cmd.substring(4).hasOnlyNumbers()) {
+        return openTab('https://ldc.service-now.com/nav_to.do?uri=sc_req_item.do?sysparm_query=number=' + cmd.toUpperCase());
+      }//Call SNOW for RITM                
+      if (noSpace & cmd.startsWith("req") & cmd.substring(3).hasOnlyNumbers()) {
+        return openTab('https://ldc.service-now.com/nav_to.do?uri=sc_request.do?sysparm_query=number=' + cmd.toUpperCase());
+      }//Main folder of budget
+      if (noSpace & cmd == "budget") {
+        return openTab('https://ldcom365.sharepoint.com/sites/GRP-BOLDBudgetMgt/Shared%20Documents/Forms/AllItems.aspx?viewid=a33af26c%2Df2ba%2D4486%2D94ec%2D8f1ee5da46c8');
+      }//CVE-2022-3786 
+      if (noSpace & cmd.startsWith("cve-")) {
+        return openTab('https://nvd.nist.gov/vuln/detail/' + cmd);
+      }
+    }
+    function tryLocalStorage(cmd, line) {
+      return localStorage.getItem(line) || localStorage.getItem(cmd) || undefined;
+    }
+    function tryLocalFunction(cmd, line) {
+      if (!this[cmd] || typeof this[cmd] !== 'function') {
+        return undefined
+      }
+        
+      const result = this[cmd](cmd, line);
+      return typeof result === "string" ? result : OK;
+    }
+    function tryParseStatement(cmd, line){
+        
+    } 
+    function ensureSimpleMap() {
+      if (!commandMap) {
+        loadSimpleMap();
+      }
+    }
+    function ensureRepeats() {
+      if (!repeats) {
+        loadRepeats();
+      }
+    }
+    function quine(){
+     return `<!DOCTYPE html>
+<html lang="en">
+  <head>${document.head.innerHTML}</head><body>${document.body.innerHTML}</body></html>`;
+      out(s);    
+    }  
+    function help() {
+      return `help: this command
+-- screen
+   clear: clear sceen
+-- testing
+   add test 
+-- local storage
+   dump: dumps local storage to the console
+   loadSimpleMap, loadRepeats: useful after messing with \`simpleMap\`
+   saveSimple<ap: useful after messing with \`simpleMap\`
+   get: gets a value from \`localStorage\`
+   set: sets a value in \`localStorage\`
+   add <key> <value>: forces a value in \`localStorage\` to become a list, and add to that list
+   add <value> to <key>: forces a value in \`localStorage\` to become a list, and add to that list
+   clear history: clears the history
+   _history: show the history
+-- text
+   sort <separateo> <string>: splits string by separator, sorts, and puts it back together
+-- geeks
+   quine: show the source code of M2
+-- dragons
+   js <stuff>
+   drop: deletes a value from \`localStorage\``        
+    }
+    function loadSimpleMap() {
+      commandMap = JSON.parse(localStorage.getItem('simpleMap') || "{}");
+    }
+    function loadRepeats() {
+      repeats = JSON.parse(localStorage.getItem('repeat') || "[]");
+    }
+    function saveSimpleMap() {
+      localStorage.setItem('simpleMap', JSON.stringify(commandMap));
+    }
+    function rememberCommand(line){
+      const lines = JSON.parse(localStorage.getItem('_history') || "[]");
+      lines.push(line);
+      localStorage.setItem('_history', JSON.stringify(lines.slice(-100)));  
+    }  
+    function nop() {//Do nothing, return `undefined`    
+    }
+    ensureSimpleMap();
+    ensureRepeats();
+    _clear(`M2 v${quine().split(/    function /).length}\n>`);
+  </script>
+</html>
