@@ -17,7 +17,7 @@ Array.prototype.first = function arrayFirst(){
 }
 
 
-Array.prototype.toCamelCase = function toCamelCase(){
+String.prototype.toCamelCase = function toCamelCase(){
   let str = this;
   return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
     if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
