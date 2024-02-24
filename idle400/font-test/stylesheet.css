@@ -1,0 +1,11 @@
+@font-face {
+    font-family: '3270-Regular';
+    src: url('3270-Regular.eot');
+    src: url('3270-Regular.eot?#iefix') format('embedded-opentype'),
+        url('3270-Regular.woff2') format('woff2'),
+        url('3270-Regular.svg#3270-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: fallback;
+}
+
