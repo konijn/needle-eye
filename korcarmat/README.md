@@ -2,8 +2,11 @@
 It is easier for a camel to go through the eye of a needle than for these projects to complete
 
 # Korcarmat
-You will the csfml bindings
-  * Linux (Mint); `sudo apt install '*csfml*'`
-  * Others; visit https://www.sfml-dev.org/download/csfml/
+You will need 
+  * A C compiler
+    * I used VSCode with C/C++ plugin
+  * The csfml bindings
+    * Linux (Mint); `sudo apt install '*csfml*'`
+    * Others; visit https://www.sfml-dev.org/download/csfml/
 
 

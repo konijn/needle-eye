@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo Compiling main.cpp
+
+if g++ -Wall -O2 main.cpp -o kcm -Ilib/sfml/include -Llib/sfml/lib -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system; then
+echo Success
+else
+echo Oops
+fi
+echo Cleaning up temp files
+rm -f *.c~
+echo Done
