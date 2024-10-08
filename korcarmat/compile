@@ -2,7 +2,7 @@
 
 echo Compiling main.cpp
 
-if g++ -Wall -O2 main.cpp -o kcm -Ilib/sfml/include -Llib/sfml/lib -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system; then
+if g++ -Wall -O2 classes/assetManagement/FontManager.cpp main.cpp -o kcm -Ilib/sfml/include -Llib/sfml/lib -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system; then
 echo Success
 else
 echo Oops

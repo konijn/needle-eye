@@ -4,7 +4,7 @@ echo Indenting main.c
 indent -nbad -bap -nbc -bbo -hnl -br -brs -c33 -cd33 -ncdb -ce -ci4 -cli0 -d0 -di1 -nfc1 -i3 -ip0 -l120 -lp -npcs -nprs -npsl -sai -saf -saw -ncs -nsc -sob -nfca -cp33 -ss -ts3 -il1 --verbose --no-tabs -l120 main.cpp
 
 echo Compiling main.c
-if g++ -Wall -O2 main.cpp -o kcm -Ilib/sfml/include -Llib/sfml/lib -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system; then
+if g++ -Wall -O2 classes/assetManagement/FontManager.cpp main.cpp -o kcm -Ilib/sfml/include -Llib/sfml/lib -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system; then
 echo Success
 echo Starting app..
 ./kcm
