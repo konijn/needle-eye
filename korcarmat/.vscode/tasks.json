@@ -9,6 +9,7 @@
                 "-Wall",
                 "-g",
                 "classes/assetManagement/FontManager.cpp",
+                "classes/widgets/TextManager.cpp",
                 "main.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
