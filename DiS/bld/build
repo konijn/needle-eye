@@ -1,0 +1,13 @@
+#!/bin/bash
+cd ..
+cd src
+cmake ..
+cmake --build .
+pwd
+cp DiS-server ../bin/DiS-server
+cp DiS-client ../bin/DiS-client
+
+cd ..
+
+./bin/DiS-server
+./bin/DiS-client

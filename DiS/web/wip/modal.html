@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Skool Modal</title>
+    <style>
+        /* Centering the modal on the screen */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7); /* Slight transparency */
+            z-index: 9999;
+        }
+
+        /* Modal box styling */
+        .modal {
+            background: black;
+            border: 1px solid green;
+            color: green;
+            padding: 20px;
+            font-family: monospace;
+            text-align: center;
+            box-shadow: 0 0 10px green;
+            width: 300px;
+        }
+
+        /* Buttons styling */
+        .modal button.selected {
+            background: black;
+            border: 2px solid green;
+            color: green;
+            padding: 10px 20px;
+            font-family: monospace;
+            margin: 5px; /* Add margin to separate buttons */
+            cursor: pointer;
+        }
+
+        /* Buttons styling */
+        .modal button {
+            background: black;
+            border: 1px solid green;
+            color: green;
+            padding: 10px 20px;
+            font-family: monospace;
+            margin: 5px; /* Add margin to separate buttons */
+            cursor: pointer;
+        }
+
+        .modal button:hover {
+            background: green;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Generic function to create a modal
+        function createModal(message, buttons) {
+            // Create overlay div
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+
+            // Create modal content div
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+
+            // Add message to modal
+            const messageElement = document.createElement('p');
+            messageElement.textContent = message;
+            modal.appendChild(messageElement);
+
+            // Add buttons to modal
+            buttons.forEach((buttonText, index) => {
+                const button = document.createElement('button');
+                button.textContent = buttonText;
+                if (index === 0) {
+                        button.className = 'selected';
+                    }                
+                button.onclick = () => {
+                    document.body.removeChild(overlay); // Remove modal on click
+                };
+                modal.appendChild(button);
+            });
+
+            // Append modal to overlay
+            overlay.appendChild(modal);
+
+            // Append overlay to body
+            document.body.appendChild(overlay);
+        }
+
+        // Function to call the modal with gobbledygook message and Accept button
+        function showOldSkoolModal() {
+            createModal('zqxwn prvlm jsdgl zxrpv.', ['Accept', 'Ignore']);
+        }
+
+        // Call the function to show the modal
+        showOldSkoolModal();
+    </script>
+</body>
+</html>

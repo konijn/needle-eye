@@ -1,0 +1,4 @@
+/home/konijn/git/needle-eye/DiS/src/CMakeFiles/DiS-server.dir
+/home/konijn/git/needle-eye/DiS/src/CMakeFiles/DiS-client.dir
+/home/konijn/git/needle-eye/DiS/src/CMakeFiles/edit_cache.dir
+/home/konijn/git/needle-eye/DiS/src/CMakeFiles/rebuild_cache.dir
