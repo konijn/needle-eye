@@ -269,7 +269,7 @@
       const noSpace = (line.indexOf(" ") === -1);
       //Call Jira
       if (cmd.startsWith("cn-") || cmd.startsWith("core-") || cmd.startsWith("ar-") || cmd.startsWith("us-") || cmd.startsWith("raf-")) {
-        return openTab('https://jira.ldc.com/browse/' + cmd.toUpperCase());
+        return openTab('https://ldc-dta.atlassian.net/browse/' + cmd.toUpperCase());
       }
       //Call SNOW for INC
       if (noSpace & cmd.startsWith("inc") & cmd.substring(3).hasOnlyNumbers()) {
