@@ -268,7 +268,7 @@
     function tryMatcher(cmd, line) {
       const noSpace = (line.indexOf(" ") === -1);
       //Call Jira
-      if (cmd.startsWith("cn-") || cmd.startsWith("core-") || cmd.startsWith("ar-") || cmd.startsWith("us-") || cmd.startsWith("raf-")) {
+      if (cmd.startsWith("cn-") || cmd.startsWith("core-") || cmd.startsWith("ar-") || cmd.startsWith("us-") || cmd.startsWith("raf-") || cmd.startsWith("sge-")) {
         return openTab('https://ldc-dta.atlassian.net/browse/' + cmd.toUpperCase());
       }
       //Call SNOW for INC
